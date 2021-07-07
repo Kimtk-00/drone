@@ -589,7 +589,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 print("up and down correct")
 
                             if step3_flag == [1, 1]:
-                                bi_blue = blue_hsv(image)
+                                bi_blue = puple_hsv(image)
                                 if np.count_nonzero(bi_blue[:, :] > 127) > 1:
                                     print("phase_3 is Done!")
                                     drone.sendControlPosition16(0, 0, 0, 0, 0, 0)
