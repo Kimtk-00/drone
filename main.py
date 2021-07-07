@@ -59,8 +59,13 @@ def puple_hsv(image):
 if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
     # 파이캠 설정
     picam = PiCamera()
+
+    picam.start_recording('vedio.h264')
+
     cam_setting(picam)
     rawCapture = PiRGBArray(picam, size=(640, 480))
+
+
     # drone 인스턴스 선언
     drone = Drone()
     # drone 인스턴스 시작
@@ -92,6 +97,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
                 image = cv2.flip(image, 1)
+                cv2.imshow('frame',image)
                 # 첫번째 링일 때
                 if phase_1 == 1:
                     bi_green = blue_hsv(image)
@@ -145,6 +151,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             step += 1
                             drone.sendControlPosition16(13, 0, 0, 5, 0, 0)
                             sleep(3)
+                        cv2.destroyAllWindows()
 
                     elif step == 1:
 
@@ -159,6 +166,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             see_green = False
                         else:
                             step += 1
+                        cv2.destroyAllWindows()
 
                     elif step == 2:
                         step2_flag = [0, 0]
@@ -242,6 +250,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                     phase_2 = 1
                                     step2_flag = [0, 0]
                                     step = 0
+                    cv2.destroyAllWindows()
+                    picam.stop_recording()
 
                 elif phase_2 == 1:
                     bi_green = blue_hsv(image)
