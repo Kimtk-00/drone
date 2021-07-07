@@ -47,6 +47,15 @@ def blue_hsv(image):
     return bi_H_r
 
 
+def puple_hsv(image):
+    image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    H = image_hsv[:, :, 0]
+    _, bi_H = cv2.threshold(H, 50, 50, cv2.THRESH_BINARY)
+    _, bi_H_ = cv2.threshold(H, 255, 255, cv2.THRESH_BINARY_INV)
+
+    bi_H_r = cv2.bitwise_and(bi_H, bi_H_)
+    return bi_H_r
+
 if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
     # 파이캠 설정
     picam = PiCamera()
