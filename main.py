@@ -152,9 +152,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if check == [1, 1]:
                         print("go to forward")
                         drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
-                        sleep(0.5)
+                        sleep(5)
                         phase_1_2 = 1
                         phase_1_1 = 0
+
+                        print("Landing")
+                        drone.sendLanding()
+                        drone.close()
 
                 # phase 1 if 칸
 
@@ -171,9 +175,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         back = 1 
                     else:'''
 
-                print("Landing")
-                drone.sendLanding()
-                drone.close()
+
 
 
 
