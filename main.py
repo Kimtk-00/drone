@@ -25,7 +25,6 @@ def f_takeOff(drone):
     sleep(5)
 
 
-
 # 빨간색 hsv로 변환
 def red_hsv(image):
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -47,33 +46,22 @@ def blue_hsv(image):
     return bi_H_r
 
 
-def puple_hsv(image):
-    image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    H = image_hsv[:, :, 0]
-    _, bi_H = cv2.threshold(H, 50, 50, cv2.THRESH_BINARY)
-    _, bi_H_ = cv2.threshold(H, 255, 255, cv2.THRESH_BINARY_INV)
-
-    bi_H_r = cv2.bitwise_and(bi_H, bi_H_)
-    return bi_H_r
-
 if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
     # 파이캠 설정
     picam = PiCamera()
-
-    picam.start_recording('vedio.h264')
-
     cam_setting(picam)
     rawCapture = PiRGBArray(picam, size=(640, 480))
-
-
     # drone 인스턴스 선언
     drone = Drone()
     # drone 인스턴스 시작
     drone.open()
     # 변수 설정
     # ---------------------------------
-    phase_1 = 1
+    phase_1_1 = 1
+    phase_1_2 = 0
     step = 0
+    check = [0, 0]
+    back = 0
     # ---------------------------------
     phase_2 = 0
     ud_flag = 0
@@ -97,535 +85,99 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
                 image = cv2.flip(image, 1)
-                cv2.imshow('frame',image)
                 # 첫번째 링일 때
-                if phase_1 == 1:
-                    bi_green = blue_hsv(image)
-                    see_green = False
+                if phase_1_1 == 1:
+                    bi_blue = blue_hsv(image)
 
-                    left_length = 0
-                    right_length = 0
-                    up_length = 0
-                    down_length = 0
+                    value_th = np.where(bi_blue[:, :] == 255)
 
-                    left_pixel = np.count_nonzero(bi_green[:, 0:320] > 127)
-                    right_pixel = np.count_nonzero(bi_green[:, 320:640] > 127)
-                    up_pixel = np.count_nonzero(bi_green[0:240, :] > 127)
-                    down_pixel = np.count_nonzero(bi_green[240:480, :] > 127)
+                    min_x1 = np.min(value_th[1])
+                    max_x1 = np.max(value_th[1])
+                    min_y1 = np.min(value_th[0])
+                    max_y1 = np.max(value_th[0])
 
-                    whole_pixel = np.count_nonzero(bi_green[:, :] > 127)
-                    # 전체적인 링의 중앙 맞춤
-                    if step == 0:
-                        step0_flag = [0, 0]
-                        if left_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[0] = 0
-                            print("ring_right")
-                        elif right_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[0] = 0
-                            print("ring_left")
-                        else:
-                            step0_flag[0] = 1
-                            print("left and right correct")
+                    center_x1 = int((min_x1 + max_x1) / 2)
+                    center_y1 = int((min_y1 + max_y1) / 2)
 
-                        if up_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[1] = 0
-                            print("ring_down")
-                        elif down_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[1] = 0
-                            print("ring_up")
-                        else:
-                            step0_flag[1] = 1
-                            print("up and down correct")
+                    center_min_x = 640
+                    center_max_x = 0
+                    center_min_y = 480
+                    center_max_y = 0
 
-                        if step0_flag == [1, 1]:
-                            print("Next Step!")
-                            step0_flag = [0, 0]
-                            step += 1
-                            drone.sendControlPosition16(13, 0, 0, 5, 0, 0)
-                            sleep(3)
-                        cv2.destroyAllWindows()
+                    for i in range(center_x1, max_x1):
+                        if bi_blue[center_y1][i] == 255 and i > center_max_x:
+                            center_max_x = i
+                            break
 
-                    elif step == 1:
+                    for i in range(center_x1, min_x1, -1):
+                        if bi_blue[center_y1][i] == 255 and i < center_min_x:
+                            center_min_x = i
+                            break
 
-                        if bi_green[240, 320] == 255:
-                            see_green = True
-                        if see_green == True:
-                            drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
-                            sleep(2)
-                            drone.sendControlPosition16(0, 0, -2, 2, 0, 0)
-                            sleep(2)
-                            step -= 1
-                            see_green = False
-                        else:
-                            step += 1
-                        cv2.destroyAllWindows()
+                    for j in range(center_y1, min_y1, -1):
+                        if bi_blue[j][center_x1] == 255 and j < center_min_y:
+                            center_min_y = j
+                            break
 
-                    elif step == 2:
-                        step2_flag = [0, 0]
-                        if bi_green[240, 320] == 255:
-                            step -= 1
+                    for j in range(center_y1, max_y1):
+                        if bi_blue[j][center_x1] == 255 and j > center_max_y:
+                            center_max_y = j
+                            break
 
-                        else:
-                            for i in range(320):
-                                if bi_green[240, 320 - i] == 255:
-                                    left_length = i
-                                    break
-                                else:
-                                    left_length = i
-                            for i in range(320):
-                                if bi_green[240, 320 + i] == 255:
-                                    right_length = i
-                                    break
-                                else:
-                                    right_length = i
-                            ring_width = abs(right_length - left_length)
+                    center_x2 = int((center_min_x + center_max_x) / 2)
+                    center_y2 = int((center_min_y + center_max_y) / 2)
 
-                            for i in range(240):
-                                if bi_green[240 - i, 320] == 255:
-                                    up_length = i
-                                    break
-                                else:
-                                    up_length = i
-                            for i in range(240):
-                                if bi_green[240 + i, 320] == 255:
-                                    down_length = i
-                                    break
-                                else:
-                                    down_length = i
-                            ring_height = abs(down_length - up_length)
+                    if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
+                        drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
+                        sleep(0.5)
+                        print("go to left")
+                    elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
+                        drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
+                        sleep(0.5)
+                        print("go to right")
+                    else:
+                        check[0] = 1
 
-                            print(left_length, right_length)
-                            print(up_length, down_length)
-                            print(ring_width, ring_height)
+                    if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
+                        drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
+                        sleep(0.5)
+                        print("go to donw")
+                    elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
+                        drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
+                        sleep(0.5)
+                        print("go to up")
+                    else:
+                        check[1] = 1
 
-                            if left_length < ring_width * 0.4:
-                                drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                                sleep(1)
-                                step2_flag[0] = 0
-                                print("ring_right")
-                            elif right_length < ring_width * 0.4:
-                                drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                                sleep(1)
-                                step2_flag[0] = 0
-                                print("ring_left")
-                            else:
-                                step2_flag[0] = 1
-                                print("left and right correct")
+                    if check == [1, 1]:
+                        drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
+                        sleep(0.5)
+                        phase_1_2 = 1
+                        phase_1_1 = 0
 
-                            if up_length < ring_height * 0.45:
-                                drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                                sleep(1)
-                                step2_flag[1] = 0
-                                print("ring_down")
-                            elif down_length < ring_height * 0.4:
-                                drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                                sleep(1)
-                                step2_flag[1] = 0
-                                print("ring_up")
-                            else:
-                                step2_flag[1] = 1
-                                print("up and down correct")
+                # phase 1 if 칸
 
-                            if step2_flag == [1, 1]:
-                                bi_red = red_hsv(image)
-                                if np.count_nonzero(bi_red[:, :] > 127) > 1:
-                                    print("phase_1 is Done!")
-                                    drone.sendControlPosition16(12, 0, 0, 5, 0, 0)
-                                    sleep(3)
-                                    drone.sendControlPosition16(0, 0, 0, 0, 0, 0)
-                                    sleep(2)
-                                    drone.sendControlPosition16(0, 0, 0, 0, 90, 45)
-                                    sleep(7)
-                                    drone.sendControlPosition16(11, 0, 0, 5, 0, 0)
-                                    sleep(3)
-                                    phase_1 = 0
-                                    phase_2 = 1
-                                    step2_flag = [0, 0]
-                                    step = 0
-                    cv2.destroyAllWindows()
-                    picam.stop_recording()
+                '''if phase_1_2==1:
+                    bi_blue = blue_hsv(image)
+                    value_th = np.where(bi_blue[:, :] == 255)
 
-                elif phase_2 == 1:
-                    bi_green = blue_hsv(image)
+                    if np.sum(value_th) > 10:
+                        back = 1 
 
-                    see_green = False
+                    if  back ==0: #중점을 찾고 앞으로 갔는대도 파란색이 보이면 , 뒤로 가서 다시 확인 
+                        drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
 
-                    left_length = 0
-                    right_length = 0
-                    up_length = 0
-                    down_length = 0
+                        back = 1 
+                    else:'''
 
-                    left_pixel = np.count_nonzero(bi_green[:, 0:320] > 127)
-                    right_pixel = np.count_nonzero(bi_green[:, 320:640] > 127)
-                    up_pixel = np.count_nonzero(bi_green[0:240, :] > 127)
-                    down_pixel = np.count_nonzero(bi_green[240:480, :] > 127)
+                drone.sandLanding()
+                drone.close()
 
-                    whole_pixel = np.count_nonzero(bi_green[:, :] > 127)
-                    # 전체적인 링의 중앙 맞춤
-                    if step == 0:
-                        step0_flag = [0, 0]
-                        if left_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[0] = 0
-                            print("ring_right")
-                        elif right_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[0] = 0
-                            print("ring_left")
-                        else:
-                            step0_flag[0] = 1
-                            print("left and right correct")
 
-                        if up_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[1] = 0
-                            print("ring_down")
-                            if first_sight == False:
-                                first_sight = True
-                                ud_flag = 0
-                                print("mode up")
-                        elif down_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                            sleep(1)
-                            step0_flag[1] = 0
-                            print("ring_up")
-                            if first_sight == False:
-                                first_sight = True
-                                ud_flag = 1
-                                print("mode down")
-                        else:
-                            step0_flag[1] = 1
-                            print("up and down correct")
 
-                        if step0_flag == [1, 1]:
-                            print("Next Step!")
-                            step0_flag = [0, 0]
-                            step += 1
-                            drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
-                            sleep(3)
 
-                    elif step == 1:
 
-                        if bi_green[240, 320] == 255:
-                            see_green = True
-                        if see_green == True:
-                            drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
-                            sleep(5)
-                            if ud_flag == 0:
-                                drone.sendControlPosition16(0, 0, -2, 2, 0, 0)
-                                sleep(2)
-                            else:
-                                drone.sendControlPosition16(0, 0, 2, 2, 0, 0)
-                                sleep(2)
-                            step -= 1
-                            see_green = False
-                        else:
-                            step += 1
 
-                    elif step == 2:
-                        step2_flag = [0, 0]
-
-                        if bi_green[240, 320] == 255:
-                            see_green = True
-                            step -= 1
-
-                        else:
-                            for i in range(320):
-                                if bi_green[240, 320 - i] == 255:
-                                    left_length = i
-                                    break
-                                else:
-                                    left_length = i
-                            for i in range(320):
-                                if bi_green[240, 320 + i] == 255:
-                                    right_length = i
-                                    break
-                                else:
-                                    right_length = i
-
-                            ring_width = abs(right_length - left_length)
-
-                            for i in range(240):
-                                if bi_green[240 - i, 320] == 255:
-                                    up_length = i
-                                    break
-                                else:
-                                    up_length = i
-                            for i in range(240):
-                                if bi_green[240 + i, 320] == 255:
-                                    down_length = i
-                                    break
-                                else:
-                                    down_length = i
-
-                            ring_height = abs(down_length - up_length)
-
-                            print(left_length, right_length)
-                            print(up_length, down_length)
-                            print(ring_width, ring_height)
-
-                            if left_length < ring_width * 0.4:
-                                drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                                sleep(2)
-                                step2_flag[0] = 0
-                                print("square_right")
-                            elif right_length < ring_width * 0.4:
-                                drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                                sleep(2)
-                                step2_flag[0] = 0
-                                print("square_left")
-                            else:
-                                step2_flag[0] = 1
-                                print("left and right correct")
-
-                            if up_length < ring_height * 0.45:
-                                drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                                sleep(2)
-                                step2_flag[1] = 0
-                                print("square_down")
-                            elif down_length < ring_height * 0.4:
-                                drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                                sleep(2)
-                                step2_flag[1] = 0
-                                print("square_up")
-                            else:
-                                step2_flag[1] = 1
-                                print("up and down correct")
-
-                            if step2_flag == [1, 1]:
-                                bi_red = red_hsv(image)
-                                if np.count_nonzero(bi_red[:, :] > 127) > 1:
-                                    print("phase_2 is Done!")
-                                    drone.sendControlPosition16(12, 0, 0, 5, 0, 0)
-                                    sleep(3)
-                                    drone.sendControlPosition16(0, 0, 0, 0, 0, 0)
-                                    sleep(2)
-                                    drone.sendControlPosition16(0, 0, 0, 0, 90, 45)
-                                    sleep(7)
-                                    drone.sendControlPosition16(0, -2, 0, 2, 0, 0)
-                                    sleep(2)
-                                    drone.sendControlPosition16(11, 0, 0, 5, 0, 0)
-                                    sleep(3)
-                                    phase_2 = 0
-                                    phase_3 = 1
-                                    step2_flag = [0, 0]
-                                    step = 0
-
-                elif phase_3 == 1:
-
-                    bi_green = blue_hsv(image)
-
-                    see_green = False
-
-                    left_length = 0
-                    right_length = 0
-                    up_length = 0
-                    down_length = 0
-
-                    left_pixel = np.count_nonzero(bi_green[:, 0:320] > 127)
-                    right_pixel = np.count_nonzero(bi_green[:, 320:640] > 127)
-                    up_pixel = np.count_nonzero(bi_green[0:240, :] > 127)
-                    down_pixel = np.count_nonzero(bi_green[240:480, :] > 127)
-
-                    whole_pixel = np.count_nonzero(bi_green[:, :] > 127)
-
-                    print(left_pixel, right_pixel)
-                    # 전체적인 링의 중앙 맞춤
-                    if step == 0:
-                        # phase_2의 반대 방향으로 위 아래 조절
-                        if first_sight == True:
-                            if ud_flag == 0:
-                                drone.sendControlPosition16(0, 0, 5, 5, 0, 0)
-                                sleep(3)
-                            else:
-                                drone.sendControlPosition16(0, 0, -5, 5, 0, 0)
-                                sleep(3)
-                            first_sight = False
-
-                        if lr_detection == False:
-                            if np.count_nonzero(bi_green[:, :] > 127) > PHASE3_PIXEL:
-                                step += 1
-                                lr_detection = True
-                            else:
-                                if lr_flag == 0:
-                                    drone.sendControlPosition16(0, -12, 0, 5, 0, 0)
-                                    sleep(3)
-                                    lr_flag += 1
-                                else:
-                                    drone.sendControlPosition16(0, 12, 0, 5, 0, 0)
-                                    sleep(2)
-                                    drone.sendControlPosition16(0, 0, 0, 0, 0, 0, )
-                                    sleep(3)
-                                    drone.sendControlPosition16(0, 12, 0, 5, 0, 0)
-                                    sleep(3)
-                                    lr_flag = 0
-                                    step += 1
-                                    lr_detection = True
-
-                    elif step == 1:
-                        step1_flag = [0, 0]
-                        if left_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                            sleep(1)
-                            step1_flag[0] = 0
-                            print("ring_right")
-                        elif right_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                            sleep(1)
-                            step1_flag[0] = 0
-                            print("ring_left")
-                        else:
-                            step1_flag[0] = 1
-                            print("left and right correct")
-
-                        if up_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                            sleep(1)
-                            step1_flag[1] = 0
-                            print("ring_down")
-                        elif down_pixel < whole_pixel * 0.4:
-                            drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                            sleep(1)
-                            step1_flag[1] = 0
-                            print("ring_up")
-                        else:
-                            step1_flag[1] = 1
-                            print("up and down correct")
-
-                        if step1_flag == [1, 1]:
-                            print("Next Step!")
-                            step1_flag = [0, 0]
-                            step += 1
-                            drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
-                            sleep(3)
-
-                    elif step == 2:
-
-                        if bi_green[240, 320] == 255:
-                            see_green = True
-
-                        if see_green == True:
-                            drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
-                            sleep(5)
-                            if ud_flag == 1:
-                                drone.sendControlPosition16(0, 0, -2, 2, 0, 0)
-                                sleep(2)
-                            else:
-                                drone.sendControlPosition16(0, 0, 2, 2, 0, 0)
-                                sleep(2)
-                            step -= 1
-                            see_green = False
-                        else:
-                            step += 1
-
-                    elif step == 3:
-                        step3_flag = [0, 0]
-
-                        if bi_green[240, 320] == 255:
-                            see_green = True
-                            step -= 1
-
-                        else:
-                            for i in range(320):
-                                if bi_green[240, 320 - i] == 255:
-                                    left_length = i
-                                    break
-                                else:
-                                    left_length = i
-                            for i in range(320):
-                                if bi_green[240, 320 + i] == 255:
-                                    right_length = i
-                                    break
-                                else:
-                                    right_length = i
-                            ring_width = abs(right_length - left_length)
-
-                            for i in range(240):
-                                if bi_green[240 - i, 320] == 255:
-                                    up_length = i
-                                    break
-                                else:
-                                    up_length = i
-                            for i in range(240):
-                                if bi_green[240 + i, 320] == 255:
-                                    down_length = i
-                                    break
-                                else:
-                                    down_length = i
-
-                            ring_height = abs(down_length - up_length)
-
-                            print(left_length, right_length)
-                            print(up_length, down_length)
-                            print(ring_width, ring_height)
-
-                            if left_length < ring_width * 0.4:
-                                drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                                sleep(1)
-                                step3_flag[0] = 0
-                                print("ring_right")
-                            elif right_length < ring_width * 0.4:
-                                drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                                sleep(1)
-                                step3_flag[0] = 0
-                                print("ring_left")
-                            else:
-                                step3_flag[0] = 1
-                                print("left and right correct")
-
-                            if up_length < ring_height * 0.45:
-                                drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                                sleep(1)
-                                step3_flag[1] = 0
-                                print("ring_down")
-                            elif down_length < ring_height * 0.4:
-                                drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                                sleep(1)
-                                step3_flag[1] = 0
-                                print("ring_up")
-                            else:
-                                step3_flag[1] = 1
-                                print("up and down correct")
-
-                            if step3_flag == [1, 1]:
-                                bi_blue = puple_hsv(image)
-                                if np.count_nonzero(bi_blue[:, :] > 127) > 1:
-                                    print("phase_3 is Done!")
-                                    drone.sendControlPosition16(0, 0, 0, 0, 0, 0)
-                                    sleep(3)
-                                    drone.sendControlPosition16(11, 0, 0, 5, 0, 0)
-                                    sleep(3)
-                                    phase_3 = 0
-                                    step3_flag = [0, 0]
-                                    step = 0
-                                    drone.sendLanding()
-                                    sleep(3)
-                                    break
-
-                if time.time() - start_time > 180:
-                    drone.close()
-                    print("Time Over")
-                    break
-
-                rawCapture.truncate(0)
-
-            cv2.destroyAllWindows()
-            print("landing")
-            drone.sendLanding()
-            sleep(3)
-            drone.close()
-            break
 
         except Exception as e:
             print(e)
