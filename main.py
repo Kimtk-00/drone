@@ -104,22 +104,22 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     center_min_y = 480
                     center_max_y = 0
 
-                    for i in range(center_x1, max_x1):
+                    for i in range(center_x1, max_x1-5):
                         if bi_blue[center_y1][i] == 255 and i > center_max_x:
                             center_max_x = i
                             break
 
-                    for i in range(center_x1, min_x1, -1):
+                    for i in range(center_x1, min_x1+5, -1):
                         if bi_blue[center_y1][i] == 255 and i < center_min_x:
                             center_min_x = i
                             break
 
-                    for j in range(center_y1, min_y1, -1):
+                    for j in range(center_y1, min_y1+5, -1):
                         if bi_blue[j][center_x1] == 255 and j < center_min_y:
                             center_min_y = j
                             break
 
-                    for j in range(center_y1, max_y1):
+                    for j in range(center_y1, max_y1-5):
                         if bi_blue[j][center_x1] == 255 and j > center_max_y:
                             center_max_y = j
                             break
@@ -153,12 +153,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
                         #drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
                         sleep(1)
-                        print("go to donw")
+                        print("go to up")
                         print(center_x2, center_y2)
                     elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
                         #drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
                         sleep(1)
-                        print("go to up")
+                        print("go to down")
                         print(center_x2, center_y2)
                     elif center_y2 >= 230 and center_y2 <= 250:
                         check[1] = 1
