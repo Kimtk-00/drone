@@ -170,7 +170,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         back = 1 
                     else:'''
                 print("Landing")
-                drone.sandLanding()
+                drone.sendLanding()
                 drone.close()
 
 
