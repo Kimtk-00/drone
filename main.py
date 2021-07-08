@@ -5,7 +5,7 @@ from e_drone.protocol import *
 from e_drone.system import *
 import time
 from time import sleep
-from cv2 import *
+import cv2
 import numpy as np
 
 
@@ -87,17 +87,17 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 value_th = np.where(test_blue[:, :] == 255)
 
-                imshow("Frame", test_blue)
-                key = waitKey(0) & 0xFF
+                cv2.imshow("Frame", test_blue)
+                key = cv2.waitKey(0) & 0xFF
 
                 rawCapture.truncate(0)
 
                 if key == ord("c"):
                     continue
                 elif key == ord("e"):
-                    imwrite("capture_{}.jpg".format(i), image)
+                    cv2.imwrite("capture_{}.jpg".format(i), image)
                 elif key == ord("q"):
-                    destroyAllWindows()
+                    cv2.destroyAllWindows()
                     break
 
 
