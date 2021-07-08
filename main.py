@@ -68,6 +68,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     PHASE3_PIXEL = 20000
     lr_detection = False
     lr_flag = 0
+    i=1
     # 이륙
 
     start_time = time.time()
