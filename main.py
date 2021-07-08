@@ -87,93 +87,77 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 image = cv2.flip(image, 1)
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
-                    bi_blue = blue_hsv(image)
+                    bi_green = blue_hsv(image)
+                    see_green = False
 
-                    value_th = np.where(bi_blue[:, :] == 255)
+                    left_length = 0
+                    right_length = 0
+                    up_length = 0
+                    down_length = 0
 
-                    min_x1 = np.min(value_th[1])
-                    max_x1 = np.max(value_th[1])
-                    min_y1 = np.min(value_th[0])
-                    max_y1 = np.max(value_th[0])
+                    left_pixel = np.count_nonzero(bi_green[:, 0:320] > 127)
+                    right_pixel = np.count_nonzero(bi_green[:, 320:640] > 127)
+                    up_pixel = np.count_nonzero(bi_green[0:240, :] > 127)
+                    down_pixel = np.count_nonzero(bi_green[240:480, :] > 127)
 
-                    center_x1 = int((min_x1 + max_x1) / 2)
-                    center_y1 = int((min_y1 + max_y1) / 2)
+                    whole_pixel = np.count_nonzero(bi_green[:, :] > 127)
+                    # 전체적인 링의 중앙 맞춤
+                    if step == 0:
+                        step0_flag = [0, 0]
+                        if left_pixel < whole_pixel * 0.4:
+                            drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
+                            sleep(1)
+                            step0_flag[0] = 0
+                            print("ring_right")
+                        elif right_pixel < whole_pixel * 0.4:
+                            drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
+                            sleep(1)
+                            step0_flag[0] = 0
+                            print("ring_left")
+                        else:
+                            step0_flag[0] = 1
+                            print("left and right correct")
 
-                    center_min_x = 640
-                    center_max_x = 0
-                    center_min_y = 480
-                    center_max_y = 0
+                        if up_pixel < whole_pixel * 0.4:
+                            drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
+                            sleep(1)
+                            step0_flag[1] = 0
+                            print("ring_down")
+                        elif down_pixel < whole_pixel * 0.4:
+                            drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
+                            sleep(1)
+                            step0_flag[1] = 0
+                            print("ring_up")
+                        else:
+                            step0_flag[1] = 1
+                            print("up and down correct")
 
-                    for i in range(center_x1, max_x1-5):
-                        if bi_blue[center_y1][i] == 255 and i > center_max_x:
-                            center_max_x = i
-                            break
+                        if step0_flag == [1, 1]:
+                            print("Next Step!")
+                            step0_flag = [0, 0]
+                            step += 1
+                            drone.sendControlPosition16(13, 0, 0, 5, 0, 0)
+                            sleep(3)
 
-                    for i in range(center_x1, min_x1+5, -1):
-                        if bi_blue[center_y1][i] == 255 and i < center_min_x:
-                            center_min_x = i
-                            break
+                    elif step == 1:
 
-                    for j in range(center_y1, min_y1+5, -1):
-                        if bi_blue[j][center_x1] == 255 and j < center_min_y:
-                            center_min_y = j
-                            break
+                        if bi_green[240, 320] == 255:
+                            see_green = True
+                        if see_green == True:
+                            drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
+                            sleep(2)
+                            drone.sendControlPosition16(0, 0, -2, 2, 0, 0)
+                            sleep(2)
+                            step -= 1
+                            see_green = False
+                        else:
+                            drone.sendLanding()
+                            sleep(2)
+                            drone.close()
 
-                    for j in range(center_y1, max_y1-5):
-                        if bi_blue[j][center_x1] == 255 and j > center_max_y:
-                            center_max_y = j
-                            break
 
-                    center_x2 = int((center_min_x + center_max_x) / 2)
-                    center_y2 = int((center_min_y + center_max_y) / 2)
 
-                    if center_x2 > 640:
-                        center_x2 = 640
-                    if center_x2 < 0:
-                        center_x2 = 0
 
-                    if center_y2 > 480:
-                        center_y2 = 480
-                    if center_y2 < 0:
-                        center_y2 = 0
-
-                    if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                        #drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                        sleep(1)
-                        print("go to left")
-                        print(center_x2, center_y2)
-                    elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                        #drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                        sleep(1)
-                        print("go to right")
-                        print(center_x2, center_y2)
-                    elif center_x2 >= 310 and center_x2 <= 330:
-                        check[0] = 1
-
-                    if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
-                        #drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                        sleep(1)
-                        print("go to up")
-                        print(center_x2, center_y2)
-                    elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
-                        #drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                        sleep(1)
-                        print("go to down")
-                        print(center_x2, center_y2)
-                    elif center_y2 >= 230 and center_y2 <= 250:
-                        check[1] = 1
-
-                    if check == [1, 1]:
-                        print("go to forward")
-                        print(center_x2,center_y2)
-                        drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
-                        sleep(5)
-                        phase_1_2 = 1
-                        phase_1_1 = 0
-
-                        print("Landing")
-                        #drone.sendLanding()
-                        drone.close()
 
                 # phase 1 if 칸
 
