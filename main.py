@@ -150,28 +150,19 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         check[1] = 1
 
                     if check == [1, 1]:
+                        print("go to foward")
                         drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
                         sleep(5)
                         phase_1_2 = 1
                         phase_1_1 = 0
 
+                        print("Landing")
+                        drone.sendLanding()
+                        drone.close()
+
                 # phase 1 if 칸
 
-                '''if phase_1_2==1:
-                    bi_blue = blue_hsv(image)
-                    value_th = np.where(bi_blue[:, :] == 255)
 
-                    if np.sum(value_th) > 10:
-                        back = 1 
-
-                    if  back ==0: #중점을 찾고 앞으로 갔는대도 파란색이 보이면 , 뒤로 가서 다시 확인 
-                        drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
-
-                        back = 1 
-                    else:'''
-                print("Landing")
-                drone.sendLanding()
-                drone.close()
 
 
 
