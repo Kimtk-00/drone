@@ -85,6 +85,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
                 image = cv2.flip(image, 1)
+
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
                     bi_blue = blue_hsv(image)
@@ -138,27 +139,27 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         center_y2 = 0
 
                     if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                        drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                        sleep(1)
+                        drone.sendControlPosition16(0, 3, 0, 1, 0, 0)
+                        sleep(2)
                         print("go to left")
                         print(center_x2, center_y2)
                     elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                        drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                        sleep(1)
+                        drone.sendControlPosition16(0, -3, 0, 1, 0, 0)
+                        sleep(2)
                         print("go to right")
                         print(center_x2, center_y2)
                     elif center_x2 >= 310 and center_x2 <= 330:
                         check[0] = 1
 
-                    if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
-                        drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                        sleep(1)
-                        print("go to donw")
-                        print(center_x2, center_y2)
-                    elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
-                        drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                        sleep(1)
+                    if center_y2 < 230:  # 중점이 위에있다 - > 위로 가야한다.
+                        drone.sendControlPosition16(0, 0, 3, 1, 0, 0)
+                        sleep(2)
                         print("go to up")
+                        print(center_x2, center_y2)
+                    elif center_y2 > 250:  # 중점이 아래에 있다. -> 아래로 가야한다.
+                        drone.sendControlPosition16(0, 0, -3, 1, 0, 0)
+                        sleep(2)
+                        print("go to down")
                         print(center_x2, center_y2)
                     elif center_y2 >= 230 and center_y2 <= 250:
                         check[1] = 1
@@ -174,6 +175,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print("Landing")
                         drone.sendLanding()
                         drone.close()
+
+                    rawCapture.truncate(0)
 
                 # phase 1 if 칸
 
