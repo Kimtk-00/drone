@@ -129,40 +129,51 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                         drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
-                        sleep(1)
+                        sleep(0.5)
                         print("go to left")
                     elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
                         drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
-                        sleep(1)
+                        sleep(0.5)
                         print("go to right")
-                    else:
+                    elif center_x2 >= 310 and center_x2 <= 330:
                         check[0] = 1
 
                     if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
                         drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
-                        sleep(1)
+                        sleep(0.5)
                         print("go to donw")
                     elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
                         drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
-                        sleep(1)
+                        sleep(0.5)
                         print("go to up")
-                    else:
+                    elif center_y2 >= 230 and center_y2 <= 250:
                         check[1] = 1
 
                     if check == [1, 1]:
-                        print("go to foward")
+                        print("go to forward")
                         drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
-                        sleep(5)
+                        sleep(0.5)
                         phase_1_2 = 1
                         phase_1_1 = 0
 
-                        print("Landing")
-                        drone.sendLanding()
-                        drone.close()
-
                 # phase 1 if 칸
 
+                '''if phase_1_2==1:
+                    bi_blue = blue_hsv(image)
+                    value_th = np.where(bi_blue[:, :] == 255)
 
+                    if np.sum(value_th) > 10:
+                        back = 1 
+
+                    if  back ==0: #중점을 찾고 앞으로 갔는대도 파란색이 보이면 , 뒤로 가서 다시 확인 
+                        drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
+
+                        back = 1 
+                    else:'''
+
+                print("Landing")
+                drone.sendLanding()
+                drone.close()
 
 
 
