@@ -5,7 +5,7 @@ from e_drone.protocol import *
 from e_drone.system import *
 import time
 from time import sleep
-from cv2 import *
+import cv2
 import numpy as np
 
 
@@ -23,7 +23,6 @@ def f_takeOff(drone):
     drone.sendTakeOff()
     print("TakeOff")
     sleep(5)
-
 
 
 # 빨간색 hsv로 변환
@@ -58,8 +57,11 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     drone.open()
     # 변수 설정
     # ---------------------------------
-    phase_1 = 1
+    phase_1_1 = 1
+    phase_1_2 = 0
     step = 0
+    check = [0, 0]
+    back = 0
     # ---------------------------------
     phase_2 = 0
     ud_flag = 0
@@ -70,7 +72,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     lr_detection = False
     lr_flag = 0
     # 이륙
-
+    f_takeOff(drone)
 
     start_time = time.time()
     while (True):
@@ -83,62 +85,107 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
                 image = cv2.flip(image, 1)
+                # 첫번째 링일 때
+                if phase_1_1 == 1:
+                    bi_blue = blue_hsv(image)
 
-                test_blue = blue_hsv(image)
+                    value_th = np.where(bi_blue[:, :] == 255)
 
-                value_th = np.where(test_blue[:, :] == 255)
+                    min_x1 = np.min(value_th[1])
+                    max_x1 = np.max(value_th[1])
+                    min_y1 = np.min(value_th[0])
+                    max_y1 = np.max(value_th[0])
 
-                min_x1 = np.min(value_th[1])
-                max_x1 = np.max(value_th[1])
-                min_y1 = np.min(value_th[0])
-                max_y1 = np.max(value_th[0])
+                    center_x1 = int((min_x1 + max_x1) / 2)
+                    center_y1 = int((min_y1 + max_y1) / 2)
 
-                center_x1 = int((min_x1 + max_x1) / 2)
-                center_y1 = int((min_y1 + max_y1) / 2)
+                    center_min_x = 640
+                    center_max_x = 0
+                    center_min_y = 480
+                    center_max_y = 0
 
-                center_min_x = 640
-                center_max_x = 0
-                center_min_y = 480
-                center_max_y = 0
+                    for i in range(center_x1, max_x1):
+                        if bi_blue[center_y1][i] == 255 and i > center_max_x:
+                            center_max_x = i
+                            break
 
-                for i in range(center_x1, max_x1):
-                    if test_blue[center_y1][i] == 255 and i > center_max_x:
-                        center_max_x = i
-                        break
+                    for i in range(center_x1, min_x1, -1):
+                        if bi_blue[center_y1][i] == 255 and i < center_min_x:
+                            center_min_x = i
+                            break
 
-                for i in range(center_x1, min_x1, -1):
-                    if test_blue[center_y1][i] == 255 and i < center_min_x:
-                        center_min_x = i
-                        break
+                    for j in range(center_y1, min_y1, -1):
+                        if bi_blue[j][center_x1] == 255 and j < center_min_y:
+                            center_min_y = j
+                            break
 
-                for j in range(center_y1, min_y1, -1):
-                    if test_blue[j][center_x1] == 255 and j < center_min_y:
-                        center_min_y = j
-                        break
+                    for j in range(center_y1, max_y1):
+                        if bi_blue[j][center_x1] == 255 and j > center_max_y:
+                            center_max_y = j
+                            break
 
-                for j in range(center_y1, max_y1):
-                    if test_blue[j][center_x1] == 255 and j > center_max_y:
-                        center_max_y = j
-                        break
+                    center_x2 = int((center_min_x + center_max_x) / 2)
+                    center_y2 = int((center_min_y + center_max_y) / 2)
 
-                center_x2 = int((center_min_x + center_max_x) / 2)
-                center_y2 = int((center_min_y + center_max_y) / 2)
+                    if center_x2 > 640:
+                        center_x2 = 640
+                    if center_x2 < 0:
+                        center_x2 = 0
 
-                cv2.line(test_blue, (center_x1, center_y1), (center_min_x, center_y1), (100, 0, 0))
+                    if center_y2 > 480:
+                        center_y2 = 480
+                    if center_y2 < 0:
+                        center_y2 = 0
+
+                    if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
+                        drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
+                        sleep(1)
+                        print("go to left")
+                    elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
+                        drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
+                        sleep(1)
+                        print("go to right")
+                    elif center_x2 >= 310 and center_x2 <= 330:
+                        check[0] = 1
+
+                    if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
+                        drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
+                        sleep(1)
+                        print("go to donw")
+                    elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
+                        drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
+                        sleep(1)
+                        print("go to up")
+                    elif center_y2 >= 230 and center_y2 <= 250:
+                        check[1] = 1
+
+                    if check == [1, 1]:
+                        print("go to forward")
+                        drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
+                        sleep(5)
+                        phase_1_2 = 1
+                        phase_1_1 = 0
+
+                        print("Landing")
+                        drone.sendLanding()
+                        drone.close()
+
+                # phase 1 if 칸
+
+                '''if phase_1_2==1:
+                    bi_blue = blue_hsv(image)
+                    value_th = np.where(bi_blue[:, :] == 255)
+
+                    if np.sum(value_th) > 10:
+                        back = 1 
+
+                    if  back ==0: #중점을 찾고 앞으로 갔는대도 파란색이 보이면 , 뒤로 가서 다시 확인 
+                        drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
+
+                        back = 1 
+                    else:'''
 
 
-                imshow("Frame", test_blue)
-                key = waitKey(0) & 0xFF
-
-                rawCapture.truncate(0)
-
-                if key == ord("c"):
-                    continue
-                elif key == ord("e"):
-                    imwrite("capture_{}.jpg".format(i), image)
-                elif key == ord("q"):
-                    destroyAllWindows()
-                    break
 
 
 
