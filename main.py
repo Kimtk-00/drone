@@ -72,11 +72,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     PHASE3_PIXEL = 20000
     lr_detection = False
     lr_flag = 0
-    # 이륙
-    f_takeOff(drone)
 
     start_time = time.time()
     picam.start_recording('video.h264')  # 녹화 시작
+    # 이륙
+    f_takeOff(drone)
+
+
 
     while (wc):
         try:
@@ -182,10 +184,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_1 = 0
 
                         print("Landing")
-                        picam.stop_recording()  # 녹화 종료
+                          # 녹화 종료
                         drone.sendLanding()
                         sleep(5)
                         drone.close()
+                        picam.stop_recording()
+                        print(time.time()-start_time)
                         wc = False
 
 
