@@ -6,7 +6,7 @@ from e_drone.system import *
 import time
 import datetime
 from time import sleep
-from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows
+from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows, imread
 import numpy as np
 
 
@@ -75,6 +75,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     lr_detection = False
     lr_flag = 0
 
+    image = imread("home/pi/Desktop/1.png")
+    imshow("a", image)
     start_time = time.time()
     now = datetime.datetime.now()
     f = now.strftime('%d %H:%M:%S')
@@ -99,7 +101,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = flip(image, 0)
                 image = flip(image, 1)
-                imshow("a", image)
                 if waitKey(1) & 0xff == ord('q'):
                     destroyAllWindows()
                     drone.sendStop()
