@@ -228,5 +228,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
     except Exception as e:
         print(e)
-        drone.sendLanding()
+        drone.sendStop()
+        sleep(2)
+        picam.stop_recording()
         drone.close()
