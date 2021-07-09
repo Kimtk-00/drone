@@ -82,6 +82,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # image 변수에 frame의 배열 저장 - Numpy 형식
                 image = frame.array
                 sleep(0.01)
+
+                 # picamera 생성
+                picam.start_recording('video.h264')  # 녹화 시작
+                sleep(5)  # 5초간 대기
+
+
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
                 image = cv2.flip(image, 1)
@@ -174,13 +180,15 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_1 = 0
 
                         print("Landing")
+                        picam.stop_recording()  # 녹화 종료
                         drone.sendLanding()
                         drone.close()
 
 
 
 
+
         except Exception as e:
             print(e)
-            # drone.sendLanding()
+            drone.sendLanding()
             drone.close()
