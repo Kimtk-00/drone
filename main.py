@@ -6,7 +6,7 @@ from e_drone.system import *
 import time
 import datetime
 from time import sleep
-import cv2
+from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey
 import numpy as np
 
 
@@ -28,22 +28,22 @@ def f_takeOff(drone):
 
 # 빨간색 hsv로 변환
 def red_hsv(image):
-    image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    image_hsv = cvtColor(image, COLOR_BGR2HSV)
     H = image_hsv[:, :, 0]
-    _, bi_H = cv2.threshold(H, 172, 255, cv2.THRESH_BINARY)
-    _, bi_H_ = cv2.threshold(H, 182, 255, cv2.THRESH_BINARY_INV)
+    _, bi_H = threshold(H, 172, 255, THRESH_BINARY)
+    _, bi_H_ = threshold(H, 182, 255, THRESH_BINARY_INV)
 
-    bi_H_r = cv2.bitwise_and(bi_H, bi_H_)
+    bi_H_r = bitwise_and(bi_H, bi_H_)
     return bi_H_r
 
 
 def blue_hsv(image):
-    image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    image_hsv = cvtColor(image, COLOR_BGR2HSV)
     H = image_hsv[:, :, 0]
-    _, bi_H = cv2.threshold(H, 95, 255, cv2.THRESH_BINARY)
-    _, bi_H_ = cv2.threshold(H, 105, 255, cv2.THRESH_BINARY_INV)
+    _, bi_H = threshold(H, 95, 255, THRESH_BINARY)
+    _, bi_H_ = threshold(H, 105, 255,THRESH_BINARY_INV)
 
-    bi_H_r = cv2.bitwise_and(bi_H, bi_H_)
+    bi_H_r = bitwise_and(bi_H, bi_H_)
     return bi_H_r
 
 
@@ -87,6 +87,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
             for frame in picam.capture_continuous(rawCapture, format='bgr', \
                                                   use_video_port=True):
+
+                if waitKey(1) & 0xff == ord('q'):
+                    drone.sendStop()
+                    drone.close()
+                    print("WARNING")
+                    exit(0)
+
                 # image 변수에 frame의 배열 저장 - Numpy 형식
                 image = frame.array
                 sleep(0.01)
@@ -94,8 +101,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # picamera 생성
 
                 # 영상 x, y축 반전
-                image = cv2.flip(image, 0)
-                image = cv2.flip(image, 1)
+                image = flip(image, 0)
+                image = flip(image, 1)
 
                 rawCapture.truncate(0)
                 # 첫번째 링일 때
@@ -179,7 +186,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if check == [1, 1] and step == 0:
                         print("go to forward")
                         print(center_x2,center_y2)
-                        drone.sendControlPosition16(25, 0, 0, 5, 0, 0)
+                        drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1=0
                         phase_1_2=1
@@ -207,6 +214,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         cnt = cnt - 1
 
                     elif cnt != 3:
+                        sleep(2)
                         drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
                         sleep(4)
                         drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
