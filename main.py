@@ -6,7 +6,7 @@ from e_drone.system import *
 import time
 import datetime
 from time import sleep
-from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey
+from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows
 import numpy as np
 
 
@@ -88,11 +88,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
             for frame in picam.capture_continuous(rawCapture, format='bgr', \
                                                   use_video_port=True):
 
-                if waitKey(1) & 0xff == ord('q'):
-                    drone.sendStop()
-                    drone.close()
-                    print("WARNING")
-                    exit(0)
+
 
                 # image 변수에 frame의 배열 저장 - Numpy 형식
                 image = frame.array
@@ -103,6 +99,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = flip(image, 0)
                 image = flip(image, 1)
+                imshow("a", image)
+                if waitKey(1) & 0xff == ord('q'):
+                    destroyAllWindows()
+                    drone.sendStop()
+                    drone.close()
+                    print("WARNING")
+                    exit(0)
 
                 rawCapture.truncate(0)
                 # 첫번째 링일 때
@@ -215,10 +218,10 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     elif cnt != 3:
                         sleep(2)
-                        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                        drone.sendControlPosition16(0, 0, 0, 0, 90, 30)
                         sleep(4)
                         drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
-                        sleep(2)
+                        sleep(3)
                         phase_1_1 = 1
                         phase_1_2 = 0
                         step = 0
