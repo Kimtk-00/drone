@@ -180,8 +180,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print(center_x2,center_y2)
                         drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
                         sleep(5)
-                        phase_1_2 = 1
-                        phase_1_1 = 0
+
 
                         print("Landing")
                           # 녹화 종료
