@@ -123,6 +123,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     for i in range(1,320):
                         for j in range(1,479):
                             if bi_blue[j][i] == 255:
+                                print(cnt_left)
                                 cnt_left = cnt_left + 1
 
                     for i in range(320,639):
