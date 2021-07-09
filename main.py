@@ -72,7 +72,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     lr_detection = False
     lr_flag = 0
     # 이륙
-    #f_takeOff(drone)
+    f_takeOff(drone)
 
     start_time = time.time()
     while (True):
