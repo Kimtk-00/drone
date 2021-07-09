@@ -188,7 +188,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif check == [1, 1] and step == 1:
                         print("go to forward")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
+                        drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
                         sleep(3)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -199,7 +199,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 if phase_1_2 == 1:
                     if np.sum(bi_blue[:][:] == 255) > 200:
                         sleep(2)
-                        drone.sendControlPosition16(-7, 0, 0, 3, 0, 0)
+                        drone.sendControlPosition16(-5, 0, 0, 3, 0, 0)
                         sleep(2)
                         phase_1_1 = 1
                         phase_1_2 = 0
