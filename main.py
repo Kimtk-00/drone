@@ -174,7 +174,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_1 = 0
 
                         print("Landing")
-                        #drone.sendLanding()
+                        drone.sendLanding()
                         drone.close()
 
 
