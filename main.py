@@ -63,6 +63,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     check = [0, 0]
     back = 0
     wc = True
+    cnt = 0
     # ---------------------------------
     phase_2 = 0
     ud_flag = 0
@@ -175,24 +176,50 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif center_y2 >= 230 and center_y2 <= 250:
                         check[1] = 1
 
-                    if check == [1, 1]:
+                    if check == [1, 1] and step == 0:
                         print("go to forward")
                         print(center_x2,center_y2)
-                        drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
+                        drone.sendControlPosition16(25, 0, 0, 5, 0, 0)
                         sleep(5)
+                        phase_1_1=0
+                        phase_1_2=1
+                        cnt = cnt + 1
+
+                    elif check == [1, 1] and step == 1:
+                        print("go to forward")
+                        print(center_x2, center_y2)
+                        drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
+                        sleep(3)
+                        phase_1_1 = 0
+                        phase_1_2 = 1
+                        cnt = cnt + 1
 
 
+                if phase_1_2 == 1:
+                    if np.sum(bi_blue[:][:]) > 50:
+                        drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
+                        sleep(2)
+                        phase_1_1 = 1
+                        phase_1_2 = 0
+                        step = 1
+                        cnt = cnt - 1
+
+                    elif cnt != 3:
+                        drone.sendControlPosition16(0, 0, 0, 5, 90, 20)
+                        sleep(1)
+                        drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
+                        sleep(2)
+                        phase_1_1 = 1
+                        phase_1_2 = 0
+                    elif cnt == 3:
                         print("Landing")
-                          # 녹화 종료
+                        # 녹화 종료
                         drone.sendLanding()
                         sleep(5)
                         drone.close()
                         picam.stop_recording()
-                        print(time.time()-start_time)
+                        print(time.time() - start_time)
                         wc = False
-
-
-
 
 
 
