@@ -62,6 +62,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     step = 0
     check = [0, 0]
     back = 0
+    wc = True
     # ---------------------------------
     phase_2 = 0
     ud_flag = 0
@@ -77,7 +78,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     start_time = time.time()
     picam.start_recording('video.h264')  # 녹화 시작
 
-    while (True):
+    while (wc):
         try:
             for frame in picam.capture_continuous(rawCapture, format='bgr', \
                                                   use_video_port=True):
@@ -183,7 +184,10 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print("Landing")
                         picam.stop_recording()  # 녹화 종료
                         drone.sendLanding()
+                        sleep(5)
                         drone.close()
+                        wc = False
+
 
 
 
