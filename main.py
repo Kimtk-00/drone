@@ -113,6 +113,47 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 if phase_1_1 == 1:
                     bi_blue = blue_hsv(image)
 
+
+                    for i in range(1,320):
+                        for j in range(1,479):
+                            if bi_blue[j][i] == 255:
+                                cnt_left = cnt_left + 1
+
+                    for i in range(320,639):
+                        for j in range(1,479):
+                            if bi_blue[j][i] == 255:
+                                cnt_right = cnt_right + 1
+
+                    if cnt_right > cnt_left + 50 :
+                        print("the ring is on the right")
+                        drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
+                        sleep(1)
+                    elif cnt_left > cnt_right + 50:
+                        print("the ring is on the left")
+                        drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
+                        sleep(1)
+
+
+                    for i in range(1,639):
+                        for j in range(1,240):
+                            if bi_blue[j][i] == 255:
+                                cnt_up = cnt_up + 1
+
+                    for i in range(1,639):
+                        for j in range(240,479):
+                            if bi_blue[j][i] == 255:
+                                cnt_down = cnt_down + 1
+
+                    if cnt_up > cnt_down + 50:
+                        print("the ring is on the top")
+                        drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                        sleep(1)
+                    elif cnt_down > cnt_up + 50:
+                        print("the ring is on the bot")
+                        drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
+                        sleep(1)
+
+
                     value_th = np.where(bi_blue[:, :] == 255)
 
                     min_x1 = np.min(value_th[1])
@@ -151,7 +192,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     center_x2 = int((center_min_x + center_max_x) / 2)
                     center_y2 = int((center_min_y + center_max_y) / 2)
 
-                    if center_x2 > 640:
+                    '''if center_x2 > 640:
                         center_x2 = 640
                     if center_x2 < 0:
                         center_x2 = 0
@@ -159,7 +200,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if center_y2 > 480:
                         center_y2 = 480
                     if center_y2 < 0:
-                        center_y2 = 0
+                        center_y2 = 0'''
 
                     if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                         drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
@@ -210,7 +251,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 if phase_1_2 == 1:
                     if bi_blue[240][320] == 255:
                         sleep(2)
-                        drone.sendControlPosition16(-5, 0, 0, 3, 0, 0)
+                        drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
                         sleep(2)
                         phase_1_1 = 1
                         phase_1_2 = 0
@@ -221,7 +262,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         sleep(2)
                         drone.sendControlPosition16(0, 0, 0, 0, 90, 30)
                         sleep(4)
-                        drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
+                        drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
                         sleep(3)
                         phase_1_1 = 1
                         phase_1_2 = 0
