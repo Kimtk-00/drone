@@ -4,6 +4,7 @@ from e_drone.drone import *
 from e_drone.protocol import *
 from e_drone.system import *
 import time
+import datetime
 from time import sleep
 import cv2
 import numpy as np
@@ -75,7 +76,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     lr_flag = 0
 
     start_time = time.time()
-    picam.start_recording('video.h264')  # 녹화 시작
+    now = datetime.datetime.now()
+    f = now.strftime('%d %H:%M:%S')
+    picam.start_recording(output=f + '.h264')  # 녹화 시작
     # 이륙
     f_takeOff(drone)
 
