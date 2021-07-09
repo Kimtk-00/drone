@@ -196,7 +196,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
 
                 if phase_1_2 == 1:
-                    if np.sum(bi_blue[:][:]) > 50:
+                    if np.sum(bi_blue[:][:] == 255) > 50:
                         drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
                         sleep(2)
                         phase_1_1 = 1
@@ -211,6 +211,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         sleep(2)
                         phase_1_1 = 1
                         phase_1_2 = 0
+
                     elif cnt == 3:
                         print("Landing")
                         # 녹화 종료
