@@ -82,19 +82,16 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     # 이륙
     f_takeOff(drone)
 
+    try:
+        while (wc):
 
-
-    while (wc):
-        try:
             for frame in picam.capture_continuous(rawCapture, format='bgr', \
                                                   use_video_port=True):
                 # image 변수에 frame의 배열 저장 - Numpy 형식
                 image = frame.array
                 sleep(0.01)
 
-                 # picamera 생성
-
-
+                # picamera 생성
 
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
@@ -229,7 +226,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
 
 
-        except Exception as e:
-            print(e)
-            drone.sendLanding()
-            drone.close()
+    except Exception as e:
+        print(e)
+        drone.sendLanding()
+        drone.close()
