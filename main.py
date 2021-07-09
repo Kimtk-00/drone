@@ -75,6 +75,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     f_takeOff(drone)
 
     start_time = time.time()
+    picam.start_recording('video.h264')  # 녹화 시작
+
     while (True):
         try:
             for frame in picam.capture_continuous(rawCapture, format='bgr', \
@@ -84,8 +86,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 sleep(0.01)
 
                  # picamera 생성
-                picam.start_recording('video.h264')  # 녹화 시작
-                sleep(5)  # 5초간 대기
+
 
 
                 # 영상 x, y축 반전
