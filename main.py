@@ -72,7 +72,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     lr_detection = False
     lr_flag = 0
     # 이륙
-    f_takeOff(drone)
+    #f_takeOff(drone)
 
     start_time = time.time()
     while (True):
@@ -85,6 +85,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = cv2.flip(image, 0)
                 image = cv2.flip(image, 1)
+
+                rawCapture.truncate(0)
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
                     bi_blue = blue_hsv(image)
@@ -138,12 +140,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         center_y2 = 0
 
                     if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                        drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
+                        #drone.sendControlPosition16(0, 1, 0, 1, 0, 0)
                         sleep(1)
                         print("go to left")
                         print(center_x2, center_y2)
                     elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                        drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
+                        #drone.sendControlPosition16(0, -1, 0, 1, 0, 0)
                         sleep(1)
                         print("go to right")
                         print(center_x2, center_y2)
@@ -151,12 +153,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         check[0] = 1
 
                     if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
-                        drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
+                        #drone.sendControlPosition16(0, 0, 1, 1, 0, 0)
                         sleep(1)
                         print("go to up")
                         print(center_x2, center_y2)
                     elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
-                        drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
+                        #drone.sendControlPosition16(0, 0, -1, 1, 0, 0)
                         sleep(1)
                         print("go to down")
                         print(center_x2, center_y2)
@@ -172,28 +174,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_1 = 0
 
                         print("Landing")
-                        drone.sendLanding()
+                        #drone.sendLanding()
                         drone.close()
-
-                # phase 1 if 칸
-
-                '''if phase_1_2==1:
-                    bi_blue = blue_hsv(image)
-                    value_th = np.where(bi_blue[:, :] == 255)
-
-                    if np.sum(value_th) > 10:
-                        back = 1 
-
-                    if  back ==0: #중점을 찾고 앞으로 갔는대도 파란색이 보이면 , 뒤로 가서 다시 확인 
-                        drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
-
-                        back = 1 
-                    else:'''
-
-
-
-
-
 
 
 
