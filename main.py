@@ -196,12 +196,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_1 = 0
                         phase_1_2 = 1
                         cnt = cnt + 1
+                        step = 0
 
 
                 if phase_1_2 == 1:
                     if np.sum(bi_blue[:][:] == 255) > 200:
-                        sleep(1)
-                        drone.sendControlPosition16(-7, 0, 0, 5, 0, 0)
+                        sleep(2)
+                        drone.sendControlPosition16(-7, 0, 0, 3, 0, 0)
                         sleep(2)
                         phase_1_1 = 1
                         phase_1_2 = 0
