@@ -161,10 +161,10 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     rad_right = center_max_x - center_x2
 
                     if rad_up > rad_down +15:
-                        drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                        drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                         print("circle is on the top")
                     elif rad_down > rad_up +15:
-                        drone.sendControlPosition16(-2, 0, 0, 5, 0, 0)
+                        drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
                         print("circle is under the drone")
 
                     if rad_left > rad_right +15:
