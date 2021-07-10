@@ -67,7 +67,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     cnt = 0
 
 
-    image = imread("home/pi/Desktop/1.jpg")
+    image = imread("/home/pi/Desktop/1.jpg")
     imshow("a", image)
     start_time = time.time()
     now = datetime.datetime.now()
@@ -88,11 +88,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 image = frame.array
                 sleep(0.01)
 
-                # picamera 생성
+
 
                 # 영상 x, y축 반전
                 image = flip(image, 0)
                 image = flip(image, 1)
+
+                #강제종료
                 if waitKey(10) & 0xff == ord('q'):
                     destroyAllWindows()
                     drone.sendStop()
@@ -101,6 +103,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     exit(0)
 
                 rawCapture.truncate(0)
+
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
                     bi_blue = blue_hsv(image)
