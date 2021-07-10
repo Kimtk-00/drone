@@ -102,7 +102,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 image = flip(image, 1)
 
                 #강제종료
-                if waitKey(10) & 0xff == ord('q'):
+
+                if waitKey(1) & 0xff == ord('q'):
                     destroyAllWindows()
                     drone.sendStop()
                     drone.close()
@@ -168,26 +169,30 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if rad_up > rad_down +40:
                         drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                         print("circle is on the top")
+                        sleep(1)
                     elif rad_down > rad_up +40:
                         drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
                         print("circle is under the drone")
+                        sleep(1)
 
                     if rad_left > rad_right +40:
                         drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
                         print("circle is on the left")
+                        sleep(1)
                     elif rad_right > rad_left +40:
                         drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
+                        sleep(1)
                         print("circle is on the right")
 
 
                     if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                         drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                        sleep(1)
+                        sleep(2)
                         print("go to left")
                         print(center_x2, center_y2)
                     elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
                         drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                        sleep(1)
+                        sleep(2)
                         print("go to right")
                         print(center_x2, center_y2)
                     elif center_x2 >= 310 and center_x2 <= 330:
@@ -195,18 +200,17 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
                         drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                        sleep(1)
+                        sleep(2)
                         print("go to up")
                         print(center_x2, center_y2)
                     elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
                         drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                        sleep(1)
+                        sleep(2)
                         print("go to down")
+
                         print(center_x2, center_y2)
                     elif center_y2 >= 230 and center_y2 <= 250:
                         check[1] = 1
-
-
 
 
                     if check == [1, 1] and step == 0:
@@ -259,6 +263,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             sleep(4)
                             drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
                             sleep(3)
+                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                            sleep(2)
                             phase_1_1 = 1
                             phase_1_2 = 0
                             step = 0
