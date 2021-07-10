@@ -185,31 +185,31 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print("circle is on the right")
 
 
-                    if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
+                    if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                         drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                         sleep(2)
                         print("go to left")
                         print(center_x2, center_y2)
-                    elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
+                    elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
                         drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
                         sleep(2)
                         print("go to right")
                         print(center_x2, center_y2)
-                    elif center_x2 >= 310 and center_x2 <= 330:
+                    elif center_x2 >= 305 and center_x2 <= 335:
                         check[0] = 1
 
-                    if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
+                    if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
                         drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
                         sleep(2)
                         print("go to up")
                         print(center_x2, center_y2)
-                    elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
+                    elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
                         drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
                         sleep(2)
                         print("go to down")
 
                         print(center_x2, center_y2)
-                    elif center_y2 >= 230 and center_y2 <= 250:
+                    elif center_y2 >= 225 and center_y2 <= 255:
                         check[1] = 1
 
 
