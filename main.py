@@ -69,6 +69,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
     image = imread("/home/pi/Desktop/1.jpg")
     imshow("a", image)
+    sleep(1)
+
     start_time = time.time()
     now = datetime.datetime.now()
     f = now.strftime('%d %H:%M:%S')
