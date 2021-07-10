@@ -1,4 +1,4 @@
-'''from picamera.array import PiRGBArray
+from picamera.array import PiRGBArray
 from picamera import PiCamera
 from e_drone.drone import *
 from e_drone.protocol import *
@@ -6,7 +6,7 @@ from e_drone.system import *
 import time
 import datetime
 from time import sleep
-from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows, imread
+from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows, imread,inRange
 import numpy as np
 
 
@@ -39,12 +39,17 @@ def red_hsv(image):
 
 def blue_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    H = image_hsv[:, :, 0]
+    '''H = image_hsv[:, :, 0]
     _, bi_H = threshold(H, 95, 255, THRESH_BINARY)
     _, bi_H_ = threshold(H, 105, 255,THRESH_BINARY_INV)
 
     bi_H_r = bitwise_and(bi_H, bi_H_)
-    return bi_H_r
+    return bi_H_r'''
+    th_low = (90, 80, 70)
+    th_high = (120, 255, 255)
+
+    img_th = inRange(image_hsv, th_low, th_high)
+    return img_th
 
 
 if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
@@ -276,42 +281,5 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
         sleep(2)
         picam.stop_recording()
         drone.close()
-'''
-
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-
-import time
-from cv2 import imshow,imwrite, waitKey, destroyAllWindows,cvtColor,COLOR_BGR2HSV,inRange
-
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 32
-rawCapture = PiRGBArray(camera, size=(640, 480))
-i = 1
-time.sleep(0.1)
-
-rawCapture.truncate(0)
-
-for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
-    image = frame.array
-    img = cvtColor(image, COLOR_BGR2HSV)
-
-    th_low = (90, 80, 70)
-    th_high = (120, 255, 255)
-
-    img_th = inRange(img, th_low, th_high)
 
 
-    imshow("Frame", img_th)
-    key = waitKey(0) & 0xFF
-
-    rawCapture.truncate(0)
-
-    if key==ord("c"):
-        continue
-    elif key==ord("e"):
-        imwrite("capture_{}.jpg".format(i),image)
-    elif key==ord("q"):
-        destroyAllWindows()
-        break
