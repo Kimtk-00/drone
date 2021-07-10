@@ -67,8 +67,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     cnt = 0
 
 
-    '''image = imread("home/pi/Desktop/1.png")
-    imshow("a", image)'''
+    image = imread("home/pi/Desktop/1.jpg")
+    imshow("a", image)
     start_time = time.time()
     now = datetime.datetime.now()
     f = now.strftime('%d %H:%M:%S')
@@ -93,7 +93,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 영상 x, y축 반전
                 image = flip(image, 0)
                 image = flip(image, 1)
-                if waitKey(1) & 0xff == ord('q'):
+                if waitKey(10) & 0xff == ord('q'):
                     destroyAllWindows()
                     drone.sendStop()
                     drone.close()
@@ -104,10 +104,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
                     bi_blue = blue_hsv(image)
-
-
-
-
                     value_th = np.where(bi_blue[:, :] == 255)
 
                     min_x1 = np.min(value_th[1])
@@ -174,17 +170,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print("circle is on the right")
 
 
-
-                    '''if center_x2 > 640:
-                        center_x2 = 640
-                    if center_x2 < 0:
-                        center_x2 = 0
-
-                    if center_y2 > 480:
-                        center_y2 = 480
-                    if center_y2 < 0:
-                        center_y2 = 0'''
-
                     if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                         drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                         sleep(1)
@@ -248,15 +233,25 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         step = 1
                         cnt = cnt - 1
 
-                    elif cnt != 3:
-                        sleep(2)
-                        drone.sendControlPosition16(0, 0, 0, 0, 90, 30)
-                        sleep(4)
-                        drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
-                        sleep(3)
-                        phase_1_1 = 1
-                        phase_1_2 = 0
-                        step = 0
+                    elif cnt != 3 :
+                        bi_red = red_hsv(image)
+                        value_th_red = np.where(bi_red[:, :] == 255)
+
+                        min_x1_red = np.min(value_th_red[1])
+                        max_x1_red = np.max(value_th_red[1])
+
+                        if max_x1_red - min_x1_red < 25:
+                            sleep(2)
+                            drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                        else:
+                            sleep(2)
+                            drone.sendControlPosition16(0, 0, 0, 0, 90, 30)
+                            sleep(4)
+                            drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
+                            sleep(3)
+                            phase_1_1 = 1
+                            phase_1_2 = 0
+                            step = 0
 
                     elif cnt == 3:
                         print("Landing")
