@@ -225,6 +225,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         cnt_down = 0
                         cnt_left = 0
                         cnt_right = 0
+                        check = [0,0]
 
                     elif check == [1, 1] and step == 1:
                         print("go to forward")
@@ -235,6 +236,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_2 = 1
                         cnt = cnt + 1
                         step = 0
+                        check = [0, 0]
 
 
                 if phase_1_2 == 1:
