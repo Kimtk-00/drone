@@ -1,4 +1,4 @@
-from picamera.array import PiRGBArray
+'''from picamera.array import PiRGBArray
 from picamera import PiCamera
 from e_drone.drone import *
 from e_drone.protocol import *
@@ -136,14 +136,14 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             center_min_x = i
                             break
                     if center_min_x ==640:
-                        center_min_x = 0
+                        center_min_x = 1
 
                     for j in range(center_y1, min_y1, -1):
                         if bi_blue[j][center_x1] == 255 and j < center_min_y:
                             center_min_y = j
                             break
                     if center_min_y ==480:
-                        center_min_y = 0
+                        center_min_y = 1
 
                     for j in range(center_y1, max_y1):
                         if bi_blue[j][center_x1] == 255 and j > center_max_y:
@@ -160,17 +160,17 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     rad_left =  center_x2 - center_min_x
                     rad_right = center_max_x - center_x2
 
-                    if rad_up > rad_down +15:
+                    if rad_up > rad_down +40:
                         drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                         print("circle is on the top")
-                    elif rad_down > rad_up +15:
+                    elif rad_down > rad_up +40:
                         drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
                         print("circle is under the drone")
 
-                    if rad_left > rad_right +15:
+                    if rad_left > rad_right +40:
                         drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
                         print("circle is on the left")
-                    elif rad_right > rad_left +15:
+                    elif rad_right > rad_left +40:
                         drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                         print("circle is on the right")
 
@@ -276,3 +276,42 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
         sleep(2)
         picam.stop_recording()
         drone.close()
+'''
+
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+
+import time
+from cv2 import imshow,imwrite, waitKey, destroyAllWindows,cvtColor,COLOR_BGR2HSV,inRange
+
+camera = PiCamera()
+camera.resolution = (640, 480)
+camera.framerate = 32
+rawCapture = PiRGBArray(camera, size=(640, 480))
+i = 1
+time.sleep(0.1)
+
+rawCapture.truncate(0)
+
+for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
+    image = frame.array
+    img = cvtColor(image, COLOR_BGR2HSV)
+
+    th_low = (90, 80, 70)
+    th_high = (120, 255, 255)
+
+    img_th = inRange(img, th_low, th_high)
+
+
+    imshow("Frame", img_th)
+    key = waitKey(0) & 0xFF
+
+    rawCapture.truncate(0)
+
+    if key==ord("c"):
+        continue
+    elif key==ord("e"):
+        imwrite("capture_{}.jpg".format(i),image)
+    elif key==ord("q"):
+        destroyAllWindows()
+        break
