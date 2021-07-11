@@ -227,9 +227,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         check[1] = 1
 
                     #첫번째 링에서 6번정도 찾으면 그냥 가라
-                    if cnt == 0 and step == 0 and find_num == 4:
-                        print("go to forward 18 find ==6")
-                        sleep(2)
+                    if cnt == 0 and step == 0 and find_num >= 4:
+                        print("go to forward 18 find ==4")
                         drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
@@ -238,9 +237,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         step = 0
                         find_num = 0
                         check = [0, 0]
-                    #2,3번째 링도 8번 찾으면 가라
-                    elif check == [1, 1] and step == 0 and cnt != 0 and find_num ==8:
-                        print("go to forward 25 find==8")
+                    #2,3번째 링도 6번 찾으면 가라
+                    elif step == 0 and cnt != 0 and find_num >= 6:
+                        print("go to forward 25 find==6")
                         print(center_x2, center_y2)
                         drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
                         sleep(5)
@@ -252,7 +251,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
 
 
-                    #find가 6,8을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
+                    #find가 4,6을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
                     if check == [1, 1] and step == 0 and cnt == 0:
                         print("go to forward 18")
                         print(center_x2, center_y2)
@@ -291,7 +290,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 #end of phase 1_1
 
                 if phase_1_2 == 1:
-                    sleep(4)
+                    sleep(2)
+                    bi_blue = blue_hsv(image)
                     blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
                     if blue_num_pixel > 500:
                         print("need to back")
