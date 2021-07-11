@@ -264,7 +264,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         find_num = 0
                         check = [0, 0]
                     #2,3번째 링에선 2.5m직진
-                    elif check == [1, 1] and step == 0 and cnt != 0 :
+                    elif check == [1, 1] and step == 0 and cnt != 0:
                         print("go to forward 25")
                         print(center_x2, center_y2)
                         drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
@@ -291,7 +291,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 if phase_1_2 == 1:
                     sleep(4)
-                    if int((np.sum(bi_blue)) / 255) > 50000:
+                    if bi_blue[240][480]==255:
                         print(f"blue num is {np.sum(bi_blue)}")
                         print("need to back")
                         drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
@@ -314,13 +314,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                         else:
                             sleep(2)
-                            drone.sendControlPosition16(0, 0, 0, 0, 89, 20)
+                            drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
                             sleep(4)
-                            drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
+                            drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
                             sleep(4)
                             picam.capture(output=f + ".jpg")
                             drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
-                            sleep(4)
+                            sleep(2)
                             phase_1_1 = 1
                             phase_1_2 = 0
                             step = 0
@@ -336,6 +336,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         if max_x1_puple - min_x1_puple < 25:
                             sleep(2)
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                            print("puple is far")
                         else:
                             print("Landing")
                             # 녹화 종료
