@@ -6,7 +6,7 @@ from e_drone.system import *
 import time
 import datetime
 from cv2 import flip, inRange, bitwise_and, cvtColor, COLOR_BGR2HSV, threshold, THRESH_BINARY, THRESH_BINARY_INV
-from numpy import array, where, min as npmin, max as npmax
+import numpy as np
 
 max_re_x = 640
 max_re_y = 480
@@ -69,11 +69,11 @@ if __name__ == "__main__":
 
 
 
-            value_th = where(image[:, :] == 255)
-            min_x1 = npmin(value_th[1])
-            max_x1 = npmax(value_th[1])
-            min_y1 = npmin(value_th[0])
-            max_y1 = npmax(value_th[0])
+            value_th = np.where(image[:, :] == 255)
+            min_x1 = np.min(value_th[1])
+            max_x1 = np.max(value_th[1])
+            min_y1 = np.min(value_th[0])
+            max_y1 = np.max(value_th[0])
             center_x1 = int((min_x1 + max_x1) / 2)
             center_y1 = int((min_y1 + max_y1) / 2)
 
