@@ -318,6 +318,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
                     if blue_num_pixel > 500:
                         print("need to back")
+                        print(f"pixel_num is {blue_num_pixel}")
                         drone.sendControlPosition16(-4, 0, 0, 5, 0, 0)
                         sleep(2)
                         phase_1_1 = 1
