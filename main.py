@@ -187,6 +187,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     #첫번째 링은 그냥 직진
                     if cnt == 0 and step == 0:
+                        sleep(2)
                         drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
