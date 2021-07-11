@@ -41,12 +41,12 @@ if __name__ == "__main__":
         
 
 
-        drone.sendControlPosition16(3, 0, 0, 5, 0, 0)
+        drone.sendControlPosition16(30, 0, 0, 5, 0, 0)
         print("go f")
         sleep(7)
         drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
         print("see left")
-        sleep(2)
+        sleep(5)
         cntr += 1
 
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             drone.sendControlPosition(3.5, mx, my, 0.5, 0, 0)
             print("go f2")
             sleep(8)
-
+  
         drone.sendLanding()
         sleep(1)
         drone.close()
