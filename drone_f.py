@@ -34,7 +34,6 @@ if __name__ == "__main__":
 
     
     try:
-        start_time = time()
         now = datetime.datetime.now()
         f = now.strftime('%d %H:%M:%S')
         picam.start_recording(output=f + '.h264')
@@ -93,7 +92,6 @@ if __name__ == "__main__":
                 my *= -0.005
 
             drone.sendControlPosition(3.5, mx, my, 0.5, 0, 0)
-            print("go f 2")
             sleep(8)
 
         drone.sendLanding()
