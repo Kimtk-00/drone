@@ -51,6 +51,20 @@ def blue_hsv(image):
     img_th = inRange(image_hsv, th_low, th_high)
     return img_th
 
+def puple_hsv(image):
+    image_hsv = cvtColor(image, COLOR_BGR2HSV)
+    '''H = image_hsv[:, :, 0]
+    _, bi_H = threshold(H, 95, 255, THRESH_BINARY)
+    _, bi_H_ = threshold(H, 105, 255,THRESH_BINARY_INV)
+
+    bi_H_r = bitwise_and(bi_H, bi_H_)
+    return bi_H_r'''
+    th_low = (50, 10, 50)
+    th_high = (200, 200, 255)
+
+    img_th = inRange(image_hsv, th_low, th_high)
+    return img_th
+
 
 if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
     # 파이캠 설정
@@ -212,9 +226,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif center_y2 >= 225 and center_y2 <= 255:
                         check[1] = 1
 
-                    #첫번째 링에서 3번정도 찾으면 그냥 가라
+                    #첫번째 링에서 6번정도 찾으면 그냥 가라
                     if cnt == 0 and step == 0 and find_num == 6:
-                        print("we need to go")
+                        print("go to forward 18 find ==6")
                         sleep(2)
                         drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
                         sleep(5)
@@ -224,7 +238,20 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         step = 0
                         find_num = 0
                         check = [0, 0]
-                    #첫번째 링에선 1.8m직진
+                    #2,3번째 링도 8번 찾으면 가라
+                    elif check == [1, 1] and step == 0 and cnt != 0 and find_num ==8:
+                        print("go to forward 25 find==8")
+                        print(center_x2, center_y2)
+                        drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
+                        sleep(5)
+                        phase_1_1 = 0
+                        phase_1_2 = 1
+                        cnt = cnt + 1
+                        find_num = 0
+                        check = [0, 0]
+
+
+                    #find가 6,8을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
                     if check == [1, 1] and step == 0 and cnt == 0:
                         print("go to forward 18")
                         print(center_x2, center_y2)
@@ -297,14 +324,24 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             step = 0
 
                     elif cnt == 3:
-                        print("Landing")
-                        # 녹화 종료
-                        drone.sendLanding()
-                        sleep(5)
-                        drone.close()
-                        picam.stop_recording()
-                        print(time.time() - start_time)
-                        wc = False
+                        bi_puple = puple_hsv(image)
+                        value_th_puple = np.where(bi_puple[:, :] == 255)
+
+                        min_x1_puple = np.min(value_th_puple[1])
+                        max_x1_puple = np.max(value_th_puple[1])
+
+                        if max_x1_puple - min_x1_puple < 25:
+                            sleep(2)
+                            drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                        else:
+                            print("Landing")
+                            # 녹화 종료
+                            drone.sendLanding()
+                            sleep(5)
+                            drone.close()
+                            picam.stop_recording()
+                            print(time.time() - start_time)
+                            wc = False
 
 
 
