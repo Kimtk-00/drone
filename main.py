@@ -291,7 +291,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 if phase_1_2 == 1:
                     sleep(4)
-                    if int(np.sum(bi_blue)) / 255 > 50000:
+                    if int((np.sum(bi_blue)) / 255) > 50000:
                         print(f"blue num is {np.sum(bi_blue)}")
                         print("need to back")
                         drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
@@ -310,12 +310,13 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                         if max_x1_red - min_x1_red < 25:
                             sleep(2)
+                            print("red is far")
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                         else:
                             sleep(2)
-                            drone.sendControlPosition16(0, 0, 0, 0, 87, 20)
+                            drone.sendControlPosition16(0, 0, 0, 0, 89, 20)
                             sleep(4)
-                            drone.sendControlPosition16(7, 0, 0, 5, 0, 0)
+                            drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
                             sleep(4)
                             picam.capture(output=f + ".jpg")
                             drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
@@ -323,6 +324,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             phase_1_1 = 1
                             phase_1_2 = 0
                             step = 0
+
 
                     elif cnt == 3:
                         bi_puple = puple_hsv(image)
