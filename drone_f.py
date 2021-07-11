@@ -5,7 +5,7 @@ from e_drone.protocol import *
 from e_drone.system import *
 import time
 import datetime
-from cv2 import flip, inRange, bitwise_and, cvtColor, COLOR_BGR2HSV, threshold, THRESH_BINARY, THRESH_BINARY_INV
+from cv2 import flip, inRange, bitwise_and, cvtColor, COLOR_BGR2HSV, threshold, THRESH_BINARY, THRESH_BINARY_INV, imwrite
 import numpy as np
 
 max_re_x = 640
@@ -34,7 +34,6 @@ if __name__ == "__main__":
 
     
     try:
-        start_time = time()
         now = datetime.datetime.now()
         f = now.strftime('%d %H:%M:%S')
         picam.start_recording(output=f + '.h264')
@@ -42,12 +41,12 @@ if __name__ == "__main__":
         
 
 
-        drone.sendControlPosition16(10, 0, 0, 10, 0, 0)
-        sleep(2.5)
-        drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
-        sleep(3.5)
-        drone.sendControlPosition16(0, 0, 0, 0, 90, 90)
-        sleep(2)
+        drone.sendControlPosition16(30, 0, 0, 5, 0, 0)
+        print("go f")
+        sleep(7)
+        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+        print("see left")
+        sleep(5)
         cntr += 1
 
 
@@ -62,10 +61,11 @@ if __name__ == "__main__":
             
             image_hsv = cvtColor(image, COLOR_BGR2HSV)
             H = image_hsv[:, :, 0]
-            _, bi_H = threshold(H, 172, 255, THRESH_BINARY)
-            _, bi_H_ = threshold(H, 182, 255, THRESH_BINARY_INV)
+            _, bi_H = threshold(H, 162, 255, THRESH_BINARY)
+            _, bi_H_ = threshold(H, 192, 255, THRESH_BINARY_INV)
             image = bitwise_and(bi_H, bi_H_)
-
+            imwrite("see.jpg",image)
+            sleep(0.1)
 
 
 
@@ -91,10 +91,10 @@ if __name__ == "__main__":
                 my = 320 - center_y1
                 my *= -0.005
 
-            drone.sendControlPosition16(3.5, mx, my, 0.5, 0, 0)
+            drone.sendControlPosition(3.5, mx, my, 0.5, 0, 0)
+            print("go f2")
             sleep(8)
-            break
-
+  
         drone.sendLanding()
         sleep(1)
         drone.close()
