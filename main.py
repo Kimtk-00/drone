@@ -262,9 +262,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 #end of phase 1_1
 
                 if phase_1_2 == 1:
-                    sleep(1)
+                    sleep(4)
                     if int(np.sum(bi_blue)) / 255 > 50000:
-                        sleep(2)
+                        print(f"blue num is {np.sum(bi_blue)}")
                         print("need to back")
                         drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
                         sleep(2)
@@ -285,7 +285,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                         else:
                             sleep(2)
-                            drone.sendControlPosition16(0, 0, 0, 0, 87, 30)
+                            drone.sendControlPosition16(0, 0, 0, 0, 87, 20)
                             sleep(4)
                             drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
                             sleep(4)
