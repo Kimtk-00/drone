@@ -251,6 +251,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         check = [0, 0]
 
 
+
                     #find가 6,8을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
                     if check == [1, 1] and step == 0 and cnt == 0:
                         print("go to forward 18")
@@ -314,10 +315,10 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             sleep(2)
                             drone.sendControlPosition16(0, 0, 0, 0, 87, 20)
                             sleep(4)
-                            drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
+                            drone.sendControlPosition16(7, 0, 0, 5, 0, 0)
                             sleep(4)
                             picam.capture(output=f + ".jpg")
-                            drone.sendControlPosition16(0, 0, 3, 5, 0, 0)
+                            drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                             sleep(4)
                             phase_1_1 = 1
                             phase_1_2 = 0
