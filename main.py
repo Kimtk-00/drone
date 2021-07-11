@@ -188,6 +188,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print("circle is on the right")
 
 
+
                     if cnt==0:
                         if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
                             drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
