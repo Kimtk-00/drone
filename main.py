@@ -30,8 +30,8 @@ def f_takeOff(drone):
 def red_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
     H = image_hsv[:, :, 0]
-    _, bi_H = threshold(H, 172, 255, THRESH_BINARY)
-    _, bi_H_ = threshold(H, 182, 255, THRESH_BINARY_INV)
+    _, bi_H = threshold(H, 162, 255, THRESH_BINARY)
+    _, bi_H_ = threshold(H, 192, 255, THRESH_BINARY_INV)
 
     bi_H_r = bitwise_and(bi_H, bi_H_)
     return bi_H_r
@@ -313,7 +313,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 #end of phase 1_1
 
                 if phase_1_2 == 1:
-                    sleep(2)
+                    sleep(5)
                     bi_blue = blue_hsv(image)
                     blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
                     if blue_num_pixel > 500:
