@@ -47,6 +47,8 @@ if __name__ == "__main__":
         drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
         print("see left")
         sleep(5)
+        drone.sendControlPosition16(0, 0, 7, 5, 0, 0)
+        sleep(2)
         cntr += 1
 
 
@@ -60,10 +62,10 @@ if __name__ == "__main__":
             rawCapture.truncate(0)
             
             image_hsv = cvtColor(image, COLOR_BGR2HSV)
-            H = image_hsv[:, :, 0]
-            _, bi_H = threshold(H, 162, 255, THRESH_BINARY)
-            _, bi_H_ = threshold(H, 192, 255, THRESH_BINARY_INV)
-            image = bitwise_and(bi_H, bi_H_)
+            th_low = (-10, 100, 100)
+            th_high = (10, 255, 255)
+
+            image = inRange(image_hsv, th_low, th_high)
             imwrite("see.jpg",image)
             sleep(0.1)
 
