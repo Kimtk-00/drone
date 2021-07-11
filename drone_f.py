@@ -92,6 +92,7 @@ if __name__ == "__main__":
                 my *= -0.005
 
             drone.sendControlPosition(3.5, mx, my, 0.5, 0, 0)
+            print("go f2")
             sleep(8)
 
         drone.sendLanding()
