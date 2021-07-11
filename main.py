@@ -184,64 +184,26 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         sleep(1)
                         print("circle is on the right")
 
-                    if cnt == 0:
-                        if center_x2 < 310:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                            drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                            sleep(2)
-                            print("go to left")
-                            print(center_x2, center_y2)
-                        elif center_x2 > 330:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                            drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                            sleep(2)
-                            print("go to right")
-                            print(center_x2, center_y2)
-                        elif center_x2 >= 310 and center_x2 <= 330:
-                            check[0] = 1
 
-                        if center_y2 < 230:  # 중점이 아래에있다 - > 위로 가야한다.
-                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                            sleep(2)
-                            print("go to up")
-                            print(center_x2, center_y2)
-                        elif center_y2 > 250:  # 중점이 위에 있다. -> 아래로 가야한다.
-                            drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                            sleep(2)
-                            print("go to down")
-
-                            print(center_x2, center_y2)
-                        elif center_y2 >= 230 and center_y2 <= 25:
-                            check[1] = 1
-
-
-                        if check == [1, 1] and step == 0:
-                            print("go to forward")
-                            print(center_x2,center_y2)
-                            drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1=0
-                            phase_1_2=1
-                            cnt = cnt + 1
-                            check = [0,0]
-
-                        elif check == [1, 1] and step == 1:
-                            print("go to forward")
-                            print(center_x2, center_y2)
-                            drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
-                            sleep(3)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            step = 0
-                            check = [0, 0]
+                    #첫번째 링은 그냥 직진
+                    if cnt == 0 and step == 0:
+                        drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                        sleep(5)
+                        phase_1_1 = 0
+                        phase_1_2 = 1
+                        cnt = cnt + 1
+                        step = 0
+                        check = [0, 0]
+                    #나머지 경우에는 중점인식
                     else:
                         if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                             drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                            sleep(2)
+                            sleep(3)
                             print("go to left")
                             print(center_x2, center_y2)
                         elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
                             drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                            sleep(2)
+                            sleep(3)
                             print("go to right")
                             print(center_x2, center_y2)
                         elif center_x2 >= 305 and center_x2 <= 335:
@@ -249,12 +211,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                         if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
                             drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                            sleep(2)
+                            sleep(3)
                             print("go to up")
                             print(center_x2, center_y2)
                         elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
                             drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                            sleep(2)
+                            sleep(3)
                             print("go to down")
 
                             print(center_x2, center_y2)
@@ -262,7 +224,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             check[1] = 1
 
                         if check == [1, 1] and step == 0 and cnt == 0:
-                            print("go to forward 17")
+                            print("go to forward 18")
                             print(center_x2, center_y2)
                             drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
                             sleep(5)
