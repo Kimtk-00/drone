@@ -6,7 +6,7 @@ from e_drone.system import *
 import time
 import datetime
 from time import sleep
-from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows, imread,inRange
+from cv2 import cvtColor , COLOR_BGR2HSV,threshold,THRESH_BINARY,THRESH_BINARY_INV,bitwise_and,flip,waitKey,imshow,destroyAllWindows, imread,inRange,imwrite
 import numpy as np
 
 
@@ -70,11 +70,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     back = 0
     wc = True
     cnt = 0
-
-
-    image = imread("/home/pi/Desktop/1.jpg")
-    imshow("a", image)
-    sleep(1)
+    find_num = 0
 
     start_time = time.time()
     now = datetime.datetime.now()
@@ -101,14 +97,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 image = flip(image, 0)
                 image = flip(image, 1)
 
-                #강제종료
-
-                if waitKey(1) & 0xff == ord('q'):
-                    destroyAllWindows()
-                    drone.sendStop()
-                    drone.close()
-                    print("WARNING")
-                    exit(0)
 
                 rawCapture.truncate(0)
 
@@ -185,8 +173,48 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         print("circle is on the right")
 
 
-                    #첫번째 링은 그냥 직진
-                    if cnt == 0 and step == 0:
+
+                    if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
+                        drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                        sleep(3)
+                        find_num = find_num + 1
+                        print("go to left")
+                        print(center_x2, center_y2)
+                        print(f"find_num : {find_num}")
+
+                    elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
+                        drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
+                        sleep(3)
+                        find_num = find_num + 1
+                        print("go to right")
+                        print(center_x2, center_y2)
+                        print(f"find_num : {find_num}")
+
+                    elif center_x2 >= 305 and center_x2 <= 335:
+                        check[0] = 1
+
+                    if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
+                        drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                        sleep(3)
+                        find_num = find_num + 1
+                        print("go to up")
+                        print(center_x2, center_y2)
+                        print(f"find_num : {find_num}")
+
+                    elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
+                        drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
+                        sleep(3)
+                        find_num = find_num + 1
+                        print("go to down")
+                        print(center_x2, center_y2)
+                        print(f"find_num : {find_num}")
+
+                    elif center_y2 >= 225 and center_y2 <= 255:
+                        check[1] = 1
+
+                    #첫번째 링에서 3번정도 찾으면 그냥 가라
+                    if cnt == 0 and step == 0 and find_num == 6:
+                        print("we need to go")
                         sleep(2)
                         drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
                         sleep(5)
@@ -194,71 +222,48 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         phase_1_2 = 1
                         cnt = cnt + 1
                         step = 0
+                        find_num = 0
                         check = [0, 0]
-                    #나머지 경우에는 중점인식
-                    else:
-                        if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                            drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                            sleep(3)
-                            print("go to left")
-                            print(center_x2, center_y2)
-                        elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                            drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                            sleep(3)
-                            print("go to right")
-                            print(center_x2, center_y2)
-                        elif center_x2 >= 305 and center_x2 <= 335:
-                            check[0] = 1
+                    #첫번째 링에선 1.8m직진
+                    if check == [1, 1] and step == 0 and cnt == 0:
+                        print("go to forward 18")
+                        print(center_x2, center_y2)
+                        drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                        sleep(5)
+                        phase_1_1 = 0
+                        phase_1_2 = 1
+                        cnt = cnt + 1
+                        find_num = 0
+                        check = [0, 0]
+                    #2,3번째 링에선 2.5m직진
+                    elif check == [1, 1] and step == 0 and cnt != 0 :
+                        print("go to forward 25")
+                        print(center_x2, center_y2)
+                        drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
+                        sleep(5)
+                        phase_1_1 = 0
+                        phase_1_2 = 1
+                        cnt = cnt + 1
+                        find_num = 0
+                        check = [0, 0]
+                    #이미 한번 직진했다면 0.9m만 직진
+                    elif check == [1, 1] and step == 1:
+                        print("go to forward 9 ")
+                        print(center_x2, center_y2)
+                        drone.sendControlPosition16(9, 0, 0, 5, 0, 0)
+                        sleep(3)
+                        phase_1_1 = 0
+                        phase_1_2 = 1
+                        cnt = cnt + 1
+                        find_num = 0
+                        step = 0
+                        check = [0, 0]
 
-                        if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                            sleep(3)
-                            print("go to up")
-                            print(center_x2, center_y2)
-                        elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                            drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                            sleep(3)
-                            print("go to down")
-
-                            print(center_x2, center_y2)
-                        elif center_y2 >= 225 and center_y2 <= 255:
-                            check[1] = 1
-
-                        if check == [1, 1] and step == 0 and cnt == 0:
-                            print("go to forward 18")
-                            print(center_x2, center_y2)
-                            drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            check = [0, 0]
-                        elif check == [1, 1] and step == 0 and cnt != 0 :
-                            print("go to forward 25")
-                            print(center_x2, center_y2)
-                            drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            check = [0, 0]
-
-                        elif check == [1, 1] and step == 1:
-                            print("go to forward 9 ")
-                            print(center_x2, center_y2)
-                            drone.sendControlPosition16(9, 0, 0, 5, 0, 0)
-                            sleep(3)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            step = 0
-                            check = [0, 0]
-
-
+                #end of phase 1_1
 
                 if phase_1_2 == 1:
-                    print(f"number of blue pixel is {np.sum(bi_blue) / 255} ")
-                    if bi_blue[240][320] == 255:
+
+                    if int(np.sum(bi_blue)) / 255 > 50000:
                         sleep(2)
                         drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
                         sleep(2)
@@ -281,8 +286,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             sleep(2)
                             drone.sendControlPosition16(0, 0, 0, 0, 90, 30)
                             sleep(4)
-                            drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
+                            drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
                             sleep(4)
+                            picam.capture(output=f + ".jpg")
                             drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
                             sleep(4)
                             phase_1_1 = 1
