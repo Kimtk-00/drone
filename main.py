@@ -291,8 +291,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 if phase_1_2 == 1:
                     sleep(4)
-                    if bi_blue[240][480]==255:
-                        print(f"blue num is {np.sum(bi_blue)}")
+                    if bi_blue[240][320]==255:
                         print("need to back")
                         drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
                         sleep(2)
