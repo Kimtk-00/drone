@@ -118,7 +118,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 if phase_1_1 == 1:
                     bi_blue = blue_hsv(image)
                     value_th = np.where(bi_blue[:, :] == 255)
-                    drone.sendControlPosition16(5, 0, 0, 5, 0, 0)
+                    drone.sendControlPosition16(15, 0, 0, 5, 0, 0)
                     sleep(5)
                     drone.sendLanding()
                     sleep(2)
