@@ -166,20 +166,20 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     rad_left =  center_x2 - center_min_x
                     rad_right = center_max_x - center_x2
 
-                    if rad_up > rad_down +40:
+                    if rad_up > rad_down +30:
                         drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                         print("circle is on the top")
                         sleep(1)
-                    elif rad_down > rad_up +40:
+                    elif rad_down > rad_up +30:
                         drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
                         print("circle is under the drone")
                         sleep(1)
 
-                    if rad_left > rad_right +40:
+                    if rad_left > rad_right +30:
                         drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
                         print("circle is on the left")
                         sleep(1)
-                    elif rad_right > rad_left +40:
+                    elif rad_right > rad_left +30:
                         drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                         sleep(1)
                         print("circle is on the right")
@@ -221,10 +221,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             phase_1_1=0
                             phase_1_2=1
                             cnt = cnt + 1
-                            cnt_up = 0
-                            cnt_down = 0
-                            cnt_left = 0
-                            cnt_right = 0
                             check = [0,0]
 
                         elif check == [1, 1] and step == 1:
@@ -265,24 +261,29 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         elif center_y2 >= 225 and center_y2 <= 255:
                             check[1] = 1
 
-                        if check == [1, 1] and step == 0:
-                            print("go to forward")
+                        if check == [1, 1] and step == 0 and cnt == 0:
+                            print("go to forward 17")
+                            print(center_x2, center_y2)
+                            drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                            sleep(5)
+                            phase_1_1 = 0
+                            phase_1_2 = 1
+                            cnt = cnt + 1
+                            check = [0, 0]
+                        elif check == [1, 1] and step == 0 and cnt != 0 :
+                            print("go to forward 25")
                             print(center_x2, center_y2)
                             drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
                             sleep(5)
                             phase_1_1 = 0
                             phase_1_2 = 1
                             cnt = cnt + 1
-                            cnt_up = 0
-                            cnt_down = 0
-                            cnt_left = 0
-                            cnt_right = 0
                             check = [0, 0]
 
                         elif check == [1, 1] and step == 1:
-                            print("go to forward")
+                            print("go to forward 9 ")
                             print(center_x2, center_y2)
-                            drone.sendControlPosition16(8, 0, 0, 5, 0, 0)
+                            drone.sendControlPosition16(9, 0, 0, 5, 0, 0)
                             sleep(3)
                             phase_1_1 = 0
                             phase_1_2 = 1
@@ -293,6 +294,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
 
                 if phase_1_2 == 1:
+                    print(f"number of blue pixel is {np.sum(bi_blue) / 255} ")
                     if bi_blue[240][320] == 255:
                         sleep(2)
                         drone.sendControlPosition16(-5, 0, 0, 5, 0, 0)
