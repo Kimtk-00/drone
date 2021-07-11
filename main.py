@@ -309,19 +309,20 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 #end of phase 1_1
 
                 if phase_1_2 == 1:
-                    sleep(2)
+                    '''sleep(2)
                     bi_blue = blue_hsv(image)
                     blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
                     if blue_num_pixel > 500:
                         print("need to back")
+                        print("")
                         drone.sendControlPosition16(-4, 0, 0, 5, 0, 0)
                         sleep(2)
                         phase_1_1 = 1
                         phase_1_2 = 0
                         step = 1
-                        cnt = cnt - 1
+                        cnt = cnt - 1'''
 
-                    elif cnt != 3 :
+                    if cnt != 3 :
                         bi_red = red_hsv(image)
                         value_th_red = np.where(bi_red[:, :] == 255)
 
