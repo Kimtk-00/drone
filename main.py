@@ -113,7 +113,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 image = flip(image, 1)
 
 
+
+
                 rawCapture.truncate(0)
+
+                bi_red = red_hsv(image)
+                bi_puple = puple_hsv(image)
 
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
@@ -315,7 +320,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 if phase_1_2 == 1:
                     sleep(5)
-                    bi_blue = blue_hsv(image)
                     blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
                     if blue_num_pixel > 500:
                         print("need to back")
@@ -328,7 +332,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         cnt = cnt - 1
 
                     if cnt != 3 :
-                        bi_red = red_hsv(image)
+
                         value_th_red = np.where(bi_red[:, :] == 255)
 
                         min_x1_red = np.min(value_th_red[1])
@@ -354,7 +358,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
 
                     elif cnt == 3:
-                        bi_puple = puple_hsv(image)
+
                         value_th_puple = np.where(bi_puple[:, :] == 255)
 
                         min_x1_puple = np.min(value_th_puple[1])
