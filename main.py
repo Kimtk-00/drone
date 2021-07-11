@@ -118,7 +118,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 rawCapture.truncate(0)
 
                 bi_red = red_hsv(image)
-                bi_puple = puple_hsv(image)
+                bi_pup = puple_hsv(image)
 
                 # 첫번째 링일 때
                 if phase_1_1 == 1:
@@ -304,7 +304,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         find_num = 0
                         check = [0, 0]
                     #이미 한번 직진했다면 0.9m만 직진
-                    elif check == [1, 1] and step == 1:
+                    elif check == [1, 1] and step == 1 and already ==0:
                         print("go to forward 9 ")
                         print(center_x2, center_y2)
                         drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
@@ -321,7 +321,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 if phase_1_2 == 1:
                     sleep(5)
                     blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
-                    if blue_num_pixel > 130000:
+                    if blue_num_pixel > 150000:
+                        drone.sendControlPosition16(0, 0, 0, 0, 0, 0)
+                        sleep(3)
                         print("need to back")
                         print(f"pixel_num is {blue_num_pixel}")
                         drone.sendControlPosition16(-4, 0, 0, 5, 0, 0)
@@ -332,9 +334,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         cnt = cnt - 1
 
                     if cnt != 3 :
-
+                        bi_red = red_hsv(image)
                         value_th_red = np.where(bi_red[:, :] == 255)
-
                         min_x1_red = np.min(value_th_red[1])
                         max_x1_red = np.max(value_th_red[1])
 
@@ -359,12 +360,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     elif cnt == 3:
 
-                        value_th_puple = np.where(bi_puple[:, :] == 255)
+                        value_th_pup = np.where(bi_pup[:, :] == 255)
 
-                        min_x1_puple = np.min(value_th_puple[1])
-                        max_x1_puple = np.max(value_th_puple[1])
+                        min_x1_pup = np.min(value_th_pup[1])
+                        max_x1_pup= np.max(value_th_pup[1])
 
-                        if max_x1_puple - min_x1_puple < 25:
+                        if max_x1_pup - min_x1_pup < 25:
                             sleep(2)
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                             print("puple is far")
