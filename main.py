@@ -86,6 +86,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     cnt = 0
     find_num = 0
     already = 0
+    red_find = 0
 
     start_time = time.time()
     now = datetime.datetime.now()
@@ -213,7 +214,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                         elif center_y2 >= 225 and center_y2 <= 255:
                             check = [1,1]
-                    else:
+
+                    elif red_find == 0 and cnt !=0:
                         if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
                             drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                             sleep(3)
@@ -255,7 +257,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     #첫번째 링에서 6번정도 찾으면 그냥 가라
                     if cnt == 0 and step == 0 and find_num >= 4:
                         print("go to forward 18 find >=4")
-                        drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                        drone.sendControlPosition16(20, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -343,6 +345,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             sleep(2)
                             print("red is far")
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                            red_find = 1
                         else:
                             sleep(2)
                             drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
@@ -356,6 +359,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             phase_1_2 = 0
                             step = 0
                             already = 0
+                            red_find = 0
 
 
                     elif cnt == 3:
