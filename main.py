@@ -29,8 +29,12 @@ def f_takeOff(drone):
 # 빨간색 hsv로 변환
 def red_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
+    ''' 
     th_low = (0, 100, 100)
     th_high = (10, 255, 255)
+    '''
+    th_low = (160, 100, 70)
+    th_high = (255, 255, 255)
     img_th = inRange(image_hsv, th_low, th_high)
     return img_th
 
