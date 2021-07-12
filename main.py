@@ -29,42 +29,25 @@ def f_takeOff(drone):
 # 빨간색 hsv로 변환
 def red_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    H = image_hsv[:, :, 0]
-    _, bi_H = threshold(H, 162, 255, THRESH_BINARY)
-    _, bi_H_ = threshold(H, 192, 255, THRESH_BINARY_INV)
-
-    bi_H_r = bitwise_and(bi_H, bi_H_)
-    return bi_H_r
-
+    th_low = (160, 100, 70)
+    th_high = (255, 255, 255)
+    img_th = inRange(image_hsv, th_low, th_high)
+    return img_th
 
 def blue_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    '''H = image_hsv[:, :, 0]
-    _, bi_H = threshold(H, 95, 255, THRESH_BINARY)
-    _, bi_H_ = threshold(H, 105, 255,THRESH_BINARY_INV)
-
-    bi_H_r = bitwise_and(bi_H, bi_H_)
-    return bi_H_r'''
     th_low = (90, 80, 70)
     th_high = (120, 255, 255)
-
     img_th = inRange(image_hsv, th_low, th_high)
     return img_th
 
 def puple_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    '''H = image_hsv[:, :, 0]
-    _, bi_H = threshold(H, 95, 255, THRESH_BINARY)
-    _, bi_H_ = threshold(H, 105, 255,THRESH_BINARY_INV)
-
-    bi_H_r = bitwise_and(bi_H, bi_H_)
-    return bi_H_r'''
     th_low = (50, 10, 50)
     th_high = (200, 200, 255)
 
     img_th = inRange(image_hsv, th_low, th_high)
     return img_th
-
 
 if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
     # 파이캠 설정
@@ -322,47 +305,44 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 if phase_1_2 == 1:
                     sleep(5)
-                    blue_num_pixel = np.sum(np.where(bi_blue[:][:] > 0, 1, 0))
-                    if blue_num_pixel > 150000:
-                        drone.sendControlPosition16(0, 0, 0, 0, 0, 0)
-                        sleep(3)
-                        print("need to back")
-                        print(f"pixel_num is {blue_num_pixel}")
-                        drone.sendControlPosition16(-4, 0, 0, 5, 0, 0)
+                    bi_red = red_hsv(image)
+                    bi_pup = puple_hsv(image)
+
+                    if np.sum(bi_red) < 60000 and cnt < 3:
+                        drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                        print("go to red")
                         sleep(2)
-                        phase_1_1 = 1
-                        phase_1_2 = 0
-                        step = 1
-                        cnt = cnt - 1
 
-                    if cnt != 3 :
-                        bi_red = red_hsv(image)
-                        value_th_red = np.where(bi_red[:, :] == 255)
-                        min_x1_red = np.min(value_th_red[1])
-                        max_x1_red = np.max(value_th_red[1])
+                    elif np.sum(bi_red)>=60000 and cnt < 3:
+                        if cnt != 3:
+                            value_th_red = np.where(bi_red[:, :] == 255)
+                            min_x1_red = np.min(value_th_red[1])
+                            max_x1_red = np.max(value_th_red[1])
 
-                        if max_x1_red - min_x1_red < 25:
-                            sleep(2)
-                            print("red is far")
-                            drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                            red_find = 1
-                        else:
-                            sleep(2)
-                            drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                            sleep(4)
-                            drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
-                            sleep(4)
-                            picam.capture(output=f + ".jpg")
-                            drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
-                            sleep(2)
-                            phase_1_1 = 1
-                            phase_1_2 = 0
-                            step = 0
-                            already = 0
-                            red_find = 0
+                            if max_x1_red - min_x1_red < 25:
+                                sleep(2)
+                                print("red is far")
+                                drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                                red_find = 1
+                            else:
+                                print("turn left")
+                                sleep(2)
+                                drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                                sleep(4)
+                                drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
+                                sleep(4)
+                                picam.capture(output=f + ".jpg")
+                                drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                                sleep(2)
+                                phase_1_1 = 1
+                                phase_1_2 = 0
+                                step = 0
+                                already = 0
+                                red_find = 0
 
+                    elif cnt >= 3:
 
-                    elif cnt == 3:
+                        bi_pup = puple_hsv(image)
 
                         value_th_pup = np.where(bi_pup[:, :] == 255)
 
