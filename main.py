@@ -288,7 +288,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if check == [1, 1] and step == 0 and cnt == 0 and already == 0:
                         print("go to forward 18")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                        drone.sendControlPosition16(20, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -301,7 +301,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif check == [1, 1] and step == 0 and cnt != 0 and already ==0:
                         print("go to forward 25")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
+                        drone.sendControlPosition16(28, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
