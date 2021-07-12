@@ -328,12 +328,20 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_red = red_hsv(image)
                     bi_pup = puple_hsv(image)
 
-                    if np.sum(bi_red) < 60000 and cnt < 3:
+                    value_th_red = np.where(bi_red[:, :] == 255)
+                    min_x1_red = np.min(value_th_red[1])
+
+                    if min_x1_red < 300 and np.sum(bi_blue) / 255 < 40000:
+                        drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+
+
+
+                    if np.sum(bi_red) < 20000 and cnt < 3:
                         drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
                         print("go to red")
                         sleep(2)
 
-                    elif np.sum(bi_red)>=60000 and cnt < 3:
+                    elif np.sum(bi_red)>=20000 and cnt < 3:
                         if cnt != 3:
                             value_th_red = np.where(bi_red[:, :] == 255)
                             min_x1_red = np.min(value_th_red[1])
