@@ -28,16 +28,25 @@ def f_takeOff(drone):
 
 # 빨간색 hsv로 변환
 def red_hsv(image):
+
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    ''' 
+    H = image_hsv[:, :, 0]
+    _, bi_H = threshold(H, 172, 255, THRESH_BINARY)
+    _, bi_H_ = threshold(H, 182, 255, THRESH_BINARY_INV)
+
+    img_th =bitwise_and(bi_H, bi_H_)
+    return img_th
+    '''
+    image_hsv = cvtColor(image, COLOR_BGR2HSV)
+
     th_low = (0, 100, 100)
     th_high = (10, 255, 255)
-    '''
+   
     th_low = (160, 100, 70)
     th_high = (255, 255, 255)
     img_th = inRange(image_hsv, th_low, th_high)
     return img_th
-
+'''
 def blue_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
     th_low = (90, 80, 70)
