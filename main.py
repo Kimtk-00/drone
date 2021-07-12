@@ -329,7 +329,11 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_pup = puple_hsv(image)
 
                     value_th_red = np.where(bi_red[:, :] == 255)
-                    min_x1_red = np.min(value_th_red[1])
+                    if np.sum(value_th_red) != 0:
+                        min_x1_red = np.min(value_th_red[1])
+                    else:
+                        min_x1_red = 0
+
 
                     if min_x1_red < 300 and np.sum(bi_blue) / 255 < 40000:
                         drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
