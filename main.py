@@ -337,6 +337,9 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     if min_x1_red < 300 and np.sum(bi_blue) / 255 < 40000:
                         drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                        sleep(1)
+                        drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+
 
 
 
