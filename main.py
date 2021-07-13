@@ -36,18 +36,6 @@ def red_hsv(image):
 
     img_th = bitwise_and(bi_H, bi_H_)
     return img_th
-    '''
-    image_hsv = cvtColor(image, COLOR_BGR2HSV)
-
-    th_low = (0, 100, 100)
-    th_high = (10, 255, 255)
-
-    th_low = (160, 100, 70)
-    th_high = (255, 255, 255)
-    img_th = inRange(image_hsv, th_low, th_high)
-    return img_th
-'''
-
 
 def blue_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
@@ -340,7 +328,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     else:
                         min_x1_red = 0
 
-                    if min_x1_red < 300 and np.sum(bi_blue) / 255 < 40000:
+                    if min_x1_red < 300 and np.sum(bi_blue) / 255 < 100000:
                         drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                         sleep(1)
                         drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
