@@ -81,7 +81,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     f = now.strftime('%d %H:%M:%S')
     picam.start_recording(output=f + '.h264')  # 녹화 시작
     # 이륙
-    f_takeOff(drone)
+    #f_takeOff(drone)
 
     try:
         while (wc):
@@ -157,26 +157,26 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     rad_right = center_max_x - center_x2
 
                     if rad_up > rad_down + 30:
-                        drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                        #drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                         print("circle is on the top")
                         sleep(1)
                     elif rad_down > rad_up + 30:
-                        drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
+                        #drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
                         print("circle is under the drone")
                         sleep(1)
 
                     if rad_left > rad_right + 30:
-                        drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
+                        #drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
                         print("circle is on the left")
                         sleep(1)
                     elif rad_right > rad_left + 30:
-                        drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
+                        #drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                         sleep(1)
                         print("circle is on the right")
 
                     if cnt == 0:
                         if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                            drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                            #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to left")
@@ -184,7 +184,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             print(f"find_num : {find_num}")
 
                         elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                            drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
+                            #drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to right")
@@ -195,7 +195,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             check[0] = 1
 
                         if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                            #drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to up")
@@ -203,7 +203,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             print(f"find_num : {find_num}")
 
                         elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                            drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
+                            #drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to down")
@@ -216,7 +216,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     elif red_find == 0 and cnt != 0:
                         if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                            drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                            #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to left")
@@ -224,7 +224,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             print(f"find_num : {find_num}")
 
                         elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                            drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
+                            #drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to right")
@@ -235,7 +235,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             check[0] = 1
 
                         if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                            #drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to up")
@@ -243,7 +243,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             print(f"find_num : {find_num}")
 
                         elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                            drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
+                            #drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
                             sleep(3)
                             find_num = find_num + 1
                             print("go to down")
@@ -256,7 +256,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     # 첫번째 링에서 6번정도 찾으면 그냥 가라
                     if cnt == 0 and step == 0 and find_num >= 4:
                         print("go to forward 18 find >=4")
-                        drone.sendControlPosition16(20, 0, 0, 6, 0, 0)
+                        #drone.sendControlPosition16(20, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -269,7 +269,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif step == 0 and cnt != 0 and find_num >= 6:
                         print("go to forward 25 find>=6")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
+                        #drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -282,7 +282,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     if check == [1, 1] and step == 0 and cnt == 0 and already == 0:
                         print("go to forward 18")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(20, 0, 0, 6, 0, 0)
+                        #drone.sendControlPosition16(20, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -295,7 +295,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif check == [1, 1] and step == 0 and cnt != 0 and already == 0:
                         print("go to forward 25")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(28, 0, 0, 6, 0, 0)
+                        #drone.sendControlPosition16(28, 0, 0, 6, 0, 0)
                         sleep(5)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -306,7 +306,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     elif check == [1, 1] and step == 1 and already == 0:
                         print("go to forward 9 ")
                         print(center_x2, center_y2)
-                        drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
+                        #drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
                         sleep(3)
                         phase_1_1 = 0
                         phase_1_2 = 1
@@ -319,23 +319,26 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                 if phase_1_2 == 1:
                     sleep(5)
+                    print("phase 2 start")
                     bi_red = red_hsv(image)
                     bi_pup = puple_hsv(image)
 
                     value_th_red = np.where(bi_red[:, :] == 255)
                     if np.sum(value_th_red) != 0:
                         min_x1_red = np.min(value_th_red[1])
+                        print("cant find red")
                     else:
                         min_x1_red = 0
 
                     if min_x1_red < 300 and np.sum(bi_blue) / 255 < 100000:
-                        drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                        print("finding red")
+                        #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
                         sleep(1)
-                        drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                        #drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
                         sleep(1)
 
                     if np.sum(bi_red) < 20000 and cnt < 3:
-                        drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                        #drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
                         print("go to red")
                         sleep(2)
 
@@ -348,17 +351,17 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             if max_x1_red - min_x1_red < 25:
                                 sleep(2)
                                 print("red is far")
-                                drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                                #drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                                 red_find = 1
                             else:
                                 print("turn left")
                                 sleep(2)
-                                drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                                #drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
                                 sleep(4)
-                                drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
+                                #drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
                                 sleep(4)
                                 picam.capture(output=f + ".jpg")
-                                drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                                #drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
                                 sleep(2)
                                 phase_1_1 = 1
                                 phase_1_2 = 0
