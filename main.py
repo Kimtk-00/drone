@@ -335,6 +335,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     sleep(5)
                     bi_red = red_hsv(image)
                     bi_pup = puple_hsv(image)
+                    bi_blue = blue_hsv(image)
 
                     value_th_red = np.where(bi_red[:, :] == 255)
                     if np.sum(value_th_red) != 0:
