@@ -114,218 +114,219 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             print("find ring , go to down")
                             find_ring = 1
                             sleep(2)
+                    else:
 
 
 
-                    min_x1 = np.min(value_th[1])
-                    max_x1 = np.max(value_th[1])
-                    min_y1 = np.min(value_th[0])
-                    max_y1 = np.max(value_th[0])
+                        min_x1 = np.min(value_th[1])
+                        max_x1 = np.max(value_th[1])
+                        min_y1 = np.min(value_th[0])
+                        max_y1 = np.max(value_th[0])
 
-                    center_x1 = int((min_x1 + max_x1) / 2)
-                    center_y1 = int((min_y1 + max_y1) / 2)
+                        center_x1 = int((min_x1 + max_x1) / 2)
+                        center_y1 = int((min_y1 + max_y1) / 2)
 
-                    center_min_x = 640
-                    center_max_x = 0
-                    center_min_y = 480
-                    center_max_y = 0
+                        center_min_x = 640
+                        center_max_x = 0
+                        center_min_y = 480
+                        center_max_y = 0
 
-                    for i in range(center_x1, max_x1 - 5):
-                        if bi_blue[center_y1][i] == 255 and i > center_max_x:
-                            center_max_x = i
-                            break
-                    if center_max_x == 0:
-                        center_max_x = 639
+                        for i in range(center_x1, max_x1 - 5):
+                            if bi_blue[center_y1][i] == 255 and i > center_max_x:
+                                center_max_x = i
+                                break
+                        if center_max_x == 0:
+                            center_max_x = 639
 
-                    for i in range(center_x1, min_x1, -1):
-                        if bi_blue[center_y1][i] == 255 and i < center_min_x:
-                            center_min_x = i
-                            break
-                    if center_min_x == 640:
-                        center_min_x = 1
+                        for i in range(center_x1, min_x1, -1):
+                            if bi_blue[center_y1][i] == 255 and i < center_min_x:
+                                center_min_x = i
+                                break
+                        if center_min_x == 640:
+                            center_min_x = 1
 
-                    for j in range(center_y1, min_y1, -1):
-                        if bi_blue[j][center_x1] == 255 and j < center_min_y:
-                            center_min_y = j
-                            break
-                    if center_min_y == 480:
-                        center_min_y = 1
+                        for j in range(center_y1, min_y1, -1):
+                            if bi_blue[j][center_x1] == 255 and j < center_min_y:
+                                center_min_y = j
+                                break
+                        if center_min_y == 480:
+                            center_min_y = 1
 
-                    for j in range(center_y1, max_y1):
-                        if bi_blue[j][center_x1] == 255 and j > center_max_y:
-                            center_max_y = j
-                            break
-                    if center_max_y == 0:
-                        center_max_y = 479
+                        for j in range(center_y1, max_y1):
+                            if bi_blue[j][center_x1] == 255 and j > center_max_y:
+                                center_max_y = j
+                                break
+                        if center_max_y == 0:
+                            center_max_y = 479
 
-                    center_x2 = int((center_min_x + center_max_x) / 2)
-                    center_y2 = int((center_min_y + center_max_y) / 2)
+                        center_x2 = int((center_min_x + center_max_x) / 2)
+                        center_y2 = int((center_min_y + center_max_y) / 2)
 
-                    rad_up = center_y2 - center_min_y
-                    rad_down = center_max_y - center_y2
-                    rad_left = center_x2 - center_min_x
-                    rad_right = center_max_x - center_x2
+                        rad_up = center_y2 - center_min_y
+                        rad_down = center_max_y - center_y2
+                        rad_left = center_x2 - center_min_x
+                        rad_right = center_max_x - center_x2
 
-                    if rad_up > rad_down + 30:
-                        #drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
-                        print("circle is on the top")
-                        sleep(1)
-                    elif rad_down > rad_up + 30:
-                        #drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
-                        print("circle is under the drone")
-                        sleep(1)
+                        if rad_up > rad_down + 30:
+                            #drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                            print("circle is on the top")
+                            sleep(1)
+                        elif rad_down > rad_up + 30:
+                            #drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
+                            print("circle is under the drone")
+                            sleep(1)
 
-                    if rad_left > rad_right + 30:
-                        #drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
-                        print("circle is on the left")
-                        sleep(1)
-                    elif rad_right > rad_left + 30:
-                        #drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
-                        sleep(1)
-                        print("circle is on the right")
+                        if rad_left > rad_right + 30:
+                            #drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
+                            print("circle is on the left")
+                            sleep(1)
+                        elif rad_right > rad_left + 30:
+                            #drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
+                            sleep(1)
+                            print("circle is on the right")
 
-                    if cnt == 0:
-                        if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                            #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to left")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                        if cnt == 0:
+                            if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
+                                #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to left")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                            #drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to right")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                            elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
+                                #drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to right")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_x2 >= 305 and center_x2 <= 335:
-                            check[0] = 1
+                            elif center_x2 >= 305 and center_x2 <= 335:
+                                check[0] = 1
 
-                        if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                            #drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to up")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                            if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
+                                #drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to up")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                            #drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to down")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                            elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
+                                #drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to down")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_y2 >= 225 and center_y2 <= 255:
-                            check = [1, 1]
-                    # end of first fly detection
+                            elif center_y2 >= 225 and center_y2 <= 255:
+                                check = [1, 1]
+                        # end of first fly detection
 
-                    elif red_find == 0 and cnt != 0:
-                        if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                            #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to left")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                        elif red_find == 0 and cnt != 0:
+                            if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
+                                #drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to left")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                            #drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to right")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                            elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
+                                #drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to right")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_x2 >= 305 and center_x2 <= 335:
-                            check[0] = 1
+                            elif center_x2 >= 305 and center_x2 <= 335:
+                                check[0] = 1
 
-                        if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                            #drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to up")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                            if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
+                                #drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to up")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                            #drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                            sleep(3)
-                            find_num = find_num + 1
-                            print("go to down")
-                            print(center_x2, center_y2)
-                            print(f"find_num : {find_num}")
+                            elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
+                                #drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
+                                sleep(3)
+                                find_num = find_num + 1
+                                print("go to down")
+                                print(center_x2, center_y2)
+                                print(f"find_num : {find_num}")
 
-                        elif center_y2 >= 225 and center_y2 <= 255:
-                            check[1] = 1
+                            elif center_y2 >= 225 and center_y2 <= 255:
+                                check[1] = 1
 
-                    if step == 0:
-                        # 첫번째 링에서 4번정도 찾으면 그냥 가라
-                        if cnt == 0  and find_num >= 4:
-                            print("go to forward 18 find >=4")
-                            #drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            step = 0
-                            find_num = 0
-                            check = [0, 0]
-                            already = 1
-                        # 2,3번째 링도 8번 찾으면 가라
-                        elif cnt != 0 and find_num >= 8:
-                            print("go to forward 25 find>=8")
-                            print(center_x2, center_y2)
-                            #drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            find_num = 0
-                            check = [0, 0]
-
-
-                        # find가 4,6을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
-                        if check == [1, 1]  and cnt == 0:
-                            print("go to forward 18")
-                            print(center_x2, center_y2)
-                            #drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            find_num = 0
-                            check = [0, 0]
+                        if step == 0:
+                            # 첫번째 링에서 4번정도 찾으면 그냥 가라
+                            if cnt == 0  and find_num >= 4:
+                                print("go to forward 18 find >=4")
+                                #drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                                sleep(5)
+                                phase_1_1 = 0
+                                phase_1_2 = 1
+                                cnt = cnt + 1
+                                step = 0
+                                find_num = 0
+                                check = [0, 0]
+                                already = 1
+                            # 2,3번째 링도 8번 찾으면 가라
+                            elif cnt != 0 and find_num >= 8:
+                                print("go to forward 25 find>=8")
+                                print(center_x2, center_y2)
+                                #drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
+                                sleep(5)
+                                phase_1_1 = 0
+                                phase_1_2 = 1
+                                cnt = cnt + 1
+                                find_num = 0
+                                check = [0, 0]
 
 
-                        # 2,3번째 링에선 2.5m직진
-                        elif check == [1, 1]  and cnt != 0:
-                            print("go to forward 25")
-                            print(center_x2, center_y2)
-                            #drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
-                            sleep(5)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            find_num = 0
-                            check = [0, 0]
-                    elif step >= 1 :
-                        # 이미 한번 직진했다면 0.9m만 직진
-                        if check == [1, 1] :
-                            print("go to forward 10 ")
-                            print(center_x2, center_y2)
-                            #drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
-                            sleep(3)
-                            phase_1_1 = 0
-                            phase_1_2 = 1
-                            cnt = cnt + 1
-                            find_num = 0
-                            step = 0
-                            check = [0, 0]
+                            # find가 4,6을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
+                            if check == [1, 1]  and cnt == 0:
+                                print("go to forward 18")
+                                print(center_x2, center_y2)
+                                #drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
+                                sleep(5)
+                                phase_1_1 = 0
+                                phase_1_2 = 1
+                                cnt = cnt + 1
+                                find_num = 0
+                                check = [0, 0]
+
+
+                            # 2,3번째 링에선 2.5m직진
+                            elif check == [1, 1]  and cnt != 0:
+                                print("go to forward 25")
+                                print(center_x2, center_y2)
+                                #drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
+                                sleep(5)
+                                phase_1_1 = 0
+                                phase_1_2 = 1
+                                cnt = cnt + 1
+                                find_num = 0
+                                check = [0, 0]
+                        elif step >= 1 :
+                            # 이미 한번 직진했다면 0.9m만 직진
+                            if check == [1, 1] :
+                                print("go to forward 10 ")
+                                print(center_x2, center_y2)
+                                #drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
+                                sleep(3)
+                                phase_1_1 = 0
+                                phase_1_2 = 1
+                                cnt = cnt + 1
+                                find_num = 0
+                                step = 0
+                                check = [0, 0]
 
                 # end of phase 1_1
 
