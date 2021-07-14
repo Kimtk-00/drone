@@ -113,6 +113,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             #drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
                             print("find ring , go to down")
 
+
                             sleep(2)
                     else:
 
