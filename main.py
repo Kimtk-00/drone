@@ -332,6 +332,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         elif step >= 1 :
                             # 이미 한번 직진했다면 0.9m만 직진
                             if check == [1, 1] :
+                                sleep(3)
                                 print("go to forward 10 ")
                                 print(center_x2, center_y2)
                                 drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
@@ -351,7 +352,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_blue = blue_hsv(image)
                     #파란색 링이 아직도 일정이상 보인다? -> 페이즈1로 돌아가서 다시 링 중점찾고
                     #여기서 step이 증가되니까 다시 직진할때 거리는 위에서 말했듯이 조금만 직진하겠지?
-                    if np.sum(bi_blue) / 255 > 120000:
+                    if np.sum(bi_blue) / 255 > 70000:
                         print(np.sum(bi_blue) / 255)
                         phase_1_1 = 1
                         phase_1_2 = 0
