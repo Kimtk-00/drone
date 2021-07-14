@@ -108,7 +108,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_blue = blue_hsv(image)
                     value_th = np.where(bi_blue[:, :] == 255)
                     #파란색 링을 찾는데 링이 일정이상 안보이면 상하좌우로 움직이면서 링을 찾는거지
-                    if np.sum(bi_blue) / 255 < 70000:
+                    if np.sum(bi_blue) / 255 < 30000:
                         if find_ring == 0:
                             drone.sendControlPosition16(0, 0,-3, 5, 0, 0)
                             print("find ring , go to down")
@@ -122,12 +122,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         elif find_ring == 2 :
                             drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
                             sleep(2)
-                            drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
+                            drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                             print("find ring , go to right")
                             find_ring=3
                             sleep(2)
                         elif find_ring == 3:
-                            drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
                             print("find ring , go to up")
                             find_ring= 0
                             sleep(2)
@@ -277,6 +277,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                             elif center_y2 >= 225 and center_y2 <= 255:
                                 check[1] = 1
+
                         #아직 직진을 한번도 안한 상태
                         if step == 0:
                             # 첫번째 링에서 4번정도 찾으면 그냥 가라
@@ -352,7 +353,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_blue = blue_hsv(image)
                     #파란색 링이 아직도 일정이상 보인다? -> 페이즈1로 돌아가서 다시 링 중점찾고
                     #여기서 step이 증가되니까 다시 직진할때 거리는 위에서 말했듯이 조금만 직진하겠지?
-                    if np.sum(bi_blue) / 255 > 70000:
+                    if np.sum(bi_blue) / 255 > 50000:
                         print(np.sum(bi_blue) / 255)
                         phase_1_1 = 1
                         phase_1_2 = 0
