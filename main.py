@@ -3,8 +3,6 @@ from picamera import PiCamera
 from e_drone.drone import *
 from e_drone.protocol import *
 from e_drone.system import *
-import time
-import datetime
 from time import sleep
 from cv2 import cvtColor, COLOR_BGR2HSV, threshold, THRESH_BINARY, THRESH_BINARY_INV, bitwise_and, flip, waitKey, \
     imshow, destroyAllWindows, imread, inRange, imwrite
@@ -77,10 +75,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     red_find = 0
     find_ring = 0
 
-    start_time = time.time()
-    now = datetime.datetime.now()
-    f = now.strftime('%d %H:%M:%S')
-    picam.start_recording(output=f + '.h264')  # 녹화 시작
     # 이륙
     f_takeOff(drone)
 
@@ -124,7 +118,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             sleep(2)
                             drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                             print("find ring , go to right")
-                            find_ring=3
+                            find_ring = 3
                             sleep(2)
                         elif find_ring == 3:
                             drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
@@ -206,7 +200,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to left")
-
                                 print(f"find_num : {find_num}")
 
                             elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
@@ -214,7 +207,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to right")
-
                                 print(f"find_num : {find_num}")
 
                             elif center_x2 >= 305 and center_x2 <= 335:
@@ -225,7 +217,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to up")
-
                                 print(f"find_num : {find_num}")
 
                             elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
@@ -332,7 +323,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         #이미 직진을 한번 했다면 조금만 직진 (전처럼 1.8미터나 2.5미터 직진하면 박을테니까)
                         elif step >= 1 :
                             # 이미 한번 직진했다면 1.1m만 직진
-                            if check == [1, 1] :
+                            if check == [1, 1]:
                                 sleep(3)
                                 print("go to forward 11 ")
                                 print(center_x2, center_y2)
@@ -353,8 +344,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_blue = blue_hsv(image)
                     #파란색 링이 아직도 일정이상 보인다? -> 페이즈1로 돌아가서 다시 링 중점찾고
                     #여기서 step이 증가되니까 다시 직진할때 거리는 위에서 말했듯이 조금만 직진하겠지?
-                    if np.sum(bi_blue) / 255 > 50000:
-                        print(np.sum(bi_blue) / 255)
+                    if np.sum(bi_blue) / 255 > 30000:
                         phase_1_1 = 1
                         phase_1_2 = 0
                         step = step + 1
