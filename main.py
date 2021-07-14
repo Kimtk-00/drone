@@ -82,7 +82,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     f = now.strftime('%d %H:%M:%S')
     picam.start_recording(output=f + '.h264')  # 녹화 시작
     # 이륙
-    f_takeOff(drone)
+    #f_takeOff(drone)
 
     try:
         while (wc):
@@ -110,24 +110,26 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     #파란색 링을 찾는데 링이 일정이상 안보이면 상하좌우로 움직이면서 링을 찾는거지
                     if np.sum(bi_blue) / 255 < 100000:
                         if find_ring == 0:
-                            drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            drone.sendControlPosition16(0, 0,-3, 5, 0, 0)
                             print("find ring , go to down")
                             find_ring = 1
                             sleep(2)
                         elif find_ring == 1 :
-                            drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            drone.sendControlPosition16(0, 3, 0, 5, 0, 0)
                             print("find ring , go to left")
                             find_ring = 2
                             sleep(2)
                         elif find_ring == 2 :
                             drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            sleep(2)
+                            drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
                             print("find ring , go to right")
                             find_ring=3
                             sleep(2)
                         elif find_ring == 3:
                             drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
                             print("find ring , go to up")
-                            find_ring= 4
+                            find_ring= 0
                             sleep(2)
                     #링이 일정이상 보인다? -> 그때부터 연산 시작
                     else:
@@ -396,7 +398,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                     sleep(4)
                                     drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
                                     sleep(4)
-                                    drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                                    drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
                                     sleep(2)
                                     phase_1_1 = 1
                                     phase_1_2 = 0
