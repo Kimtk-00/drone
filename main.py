@@ -344,81 +344,75 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_blue = blue_hsv(image)
                     #파란색 링이 아직도 일정이상 보인다? -> 페이즈1로 돌아가서 다시 링 중점찾고
                     #여기서 step이 증가되니까 다시 직진할때 거리는 위에서 말했듯이 조금만 직진하겠지?
-                    if np.sum(bi_blue) / 255 > 30000:
-                        phase_1_1 = 1
-                        phase_1_2 = 0
-                        step = step + 1
-                        find_num = 0
-                        print(" back to phase 1 ")
-                        drone.sendControlPosition16(-2, 0, 0, 5, 0, 0)
-                        sleep(3)
+
                     #파란색 링이 안보일때 이제 레드를 찾는다
+
+                    sleep(4)
+                    value_th_red = np.where(bi_red[:, :] == 255)
+
+                    if np.sum(value_th_red) != 0:
+                        min_x1_red = np.min(value_th_red[1])
                     else:
-                        sleep(4)
-                        value_th_red = np.where(bi_red[:, :] == 255)
-                        if np.sum(value_th_red) != 0:
+                        min_x1_red = 0
+
+                    #빨간색표식이 왼쪽에 보이면 왼쪽으로 이동
+                    if min_x1_red < 300:
+                        print("red on the left")
+                        drone.sendControlPosition16(-1, 0, 0, 5, 0, 0)
+                        sleep(2)
+                    #빨간색이 일정이상 안보일때 직진
+                    if np.sum(bi_red) < 20000 and cnt < 3:
+                        drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                        print("go to red")
+                        sleep(2)
+                    #일정읻상 보이고 마지막 링이 아닐때
+                    elif np.sum(bi_red) >= 20000 and cnt < 3:
+                        if cnt != 3:
+                            value_th_red = np.where(bi_red[:, :] == 255)
                             min_x1_red = np.min(value_th_red[1])
-                        else:
-                            min_x1_red = 0
-
-                        #빨간색표식이 왼쪽에 보이면 왼쪽으로 이동
-                        if min_x1_red < 300:
-                            print("red on the left")
-                            drone.sendControlPosition16(-1, 0, 0, 5, 0, 0)
-                            sleep(2)
-                        #빨간색이 일정이상 안보일때 직진
-                        if np.sum(bi_red) < 20000 and cnt < 3:
-                            drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
-                            print("go to red")
-                            sleep(2)
-                        #일정읻상 보이고 마지막 링이 아닐때
-                        elif np.sum(bi_red) >= 20000 and cnt < 3:
-                            if cnt != 3:
-                                value_th_red = np.where(bi_red[:, :] == 255)
-                                min_x1_red = np.min(value_th_red[1])
-                                max_x1_red = np.max(value_th_red[1])
-                                #빨간색 표식의 크기가 작으면 다시직진
-                                if max_x1_red - min_x1_red < 25:
-                                    sleep(2)
-                                    print("red is far")
-                                    drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                                    red_find = 1
-                                #크기가 크면 좌회전 실시
-                                else:
-                                    print("turn left")
-                                    sleep(2)
-                                    drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                                    sleep(4)
-                                    drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
-                                    sleep(4)
-                                    drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                                    sleep(2)
-                                    phase_1_1 = 1
-                                    phase_1_2 = 0
-                                    step = 0
-                                    already = 0
-                                    red_find = 0
-                                    find_ring = 0
-                        #3번째 링을 통과했으면 보라색을 찾는다.
-                        elif cnt >= 3:
-
-                            bi_pup = puple_hsv(image)
-                            value_th_pup = np.where(bi_pup[:, :] == 255)
-
-                            min_x1_pup = np.min(value_th_pup[1])
-                            max_x1_pup = np.max(value_th_pup[1])
-
-                            if max_x1_pup - min_x1_pup < 25:
+                            max_x1_red = np.max(value_th_red[1])
+                            #빨간색 표식의 크기가 작으면 다시직진
+                            if max_x1_red - min_x1_red < 25:
                                 sleep(2)
+                                print("red is far")
                                 drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                                print("puple is far")
+                                red_find = 1
+                            #크기가 크면 좌회전 실시
                             else:
-                                print("Landing")
-                                # 녹화 종료
-                                drone.sendLanding()
-                                sleep(5)
-                                drone.close()
-                                wc = False
+                                print("turn left")
+                                sleep(2)
+                                drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                                sleep(4)
+                                drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
+                                sleep(4)
+                                drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                                sleep(2)
+                                phase_1_1 = 1
+                                phase_1_2 = 0
+                                step = 0
+                                already = 0
+                                red_find = 0
+                                find_ring = 0
+                    #3번째 링을 통과했으면 보라색을 찾는다.
+                    elif cnt >= 3:
+
+                        bi_pup = puple_hsv(image)
+                        value_th_pup = np.where(bi_pup[:, :] == 255)
+
+                        min_x1_pup = np.min(value_th_pup[1])
+                        max_x1_pup = np.max(value_th_pup[1])
+
+                        if max_x1_pup - min_x1_pup < 25:
+                            sleep(2)
+                            drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                            print("puple is far")
+                        else:
+                            print("Landing")
+                            # 녹화 종료
+                            drone.sendLanding()
+                            sleep(5)
+                            drone.close()
+                            wc = False
 
 
 
