@@ -75,6 +75,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     find_num = 0
     already = 0
     red_find = 0
+    find_ring = 0
 
     start_time = time.time()
     now = datetime.datetime.now()
@@ -108,9 +109,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     value_th = np.where(bi_blue[:, :] == 255)
 
                     if np.sum(bi_blue) / 255 < 100000:
-                        drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
-                        print("find ring , go to down")
-                        sleep(2)
+                        if find_ring == 0:
+                            drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            print("find ring , go to down")
+                            find_ring = 1
+                            sleep(2)
+
 
 
                     min_x1 = np.min(value_th[1])
