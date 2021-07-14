@@ -332,18 +332,11 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                 # end of phase 1_1
 
                 if phase_1_2 == 1:
-                    sleep(5)
                     bi_red = red_hsv(image)
                     bi_pup = puple_hsv(image)
                     bi_blue = blue_hsv(image)
 
-                    value_th_red = np.where(bi_red[:, :] == 255)
-                    if np.sum(value_th_red) != 0:
-                        min_x1_red = np.min(value_th_red[1])
-                    else:
-                        min_x1_red = 0
-
-                    if np.sum(bi_blue) / 255 > 150000:
+                    if np.sum(bi_blue) / 255 > 120000:
                         print(np.sum(bi_blue) / 255)
                         phase_1_1 = 1
                         phase_1_2 = 0
@@ -351,67 +344,70 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         find_num = 0
                         print(" back to phase 1 ")
                         sleep(1)
-
-
-
-                    if min_x1_red < 300 and np.sum(bi_blue) / 255 < 100000:
-                        #drone.sendControlPosition16(-1, 0, 0, 5, 0, 0)
-                        sleep(2)
-
-
-
-                    if np.sum(bi_red) < 20000 and cnt < 3:
-                        #drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
-                        print("go to red")
-                        sleep(2)
-
-                    elif np.sum(bi_red) >= 20000 and cnt < 3:
-                        if cnt != 3:
-                            value_th_red = np.where(bi_red[:, :] == 255)
+                    else:
+                        sleep(4)
+                        value_th_red = np.where(bi_red[:, :] == 255)
+                        if np.sum(value_th_red) != 0:
                             min_x1_red = np.min(value_th_red[1])
-                            max_x1_red = np.max(value_th_red[1])
-
-                            if max_x1_red - min_x1_red < 25:
-                                sleep(2)
-                                print("red is far")
-                                #drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                                red_find = 1
-                            else:
-                                print("turn left")
-                                sleep(2)
-                                #drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                                sleep(4)
-                                #drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
-                                sleep(4)
-                                picam.capture(output=f + ".jpg")
-                                #drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
-                                sleep(2)
-                                phase_1_1 = 1
-                                phase_1_2 = 0
-                                step = 0
-                                already = 0
-                                red_find = 0
-
-                    elif cnt >= 3:
-
-                        bi_pup = puple_hsv(image)
-
-                        value_th_pup = np.where(bi_pup[:, :] == 255)
-
-                        min_x1_pup = np.min(value_th_pup[1])
-                        max_x1_pup = np.max(value_th_pup[1])
-
-                        if max_x1_pup - min_x1_pup < 25:
-                            sleep(2)
-                            #drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                            print("puple is far")
                         else:
-                            print("Landing")
-                            # 녹화 종료
-                            drone.sendLanding()
-                            sleep(5)
-                            drone.close()
-                            wc = False
+                            min_x1_red = 0
+
+
+                        if min_x1_red < 300:
+                            #drone.sendControlPosition16(-1, 0, 0, 5, 0, 0)
+                            sleep(2)
+
+                        if np.sum(bi_red) < 20000 and cnt < 3:
+                            #drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                            print("go to red")
+                            sleep(2)
+
+                        elif np.sum(bi_red) >= 20000 and cnt < 3:
+                            if cnt != 3:
+                                value_th_red = np.where(bi_red[:, :] == 255)
+                                min_x1_red = np.min(value_th_red[1])
+                                max_x1_red = np.max(value_th_red[1])
+
+                                if max_x1_red - min_x1_red < 25:
+                                    sleep(2)
+                                    print("red is far")
+                                    #drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                                    red_find = 1
+                                else:
+                                    print("turn left")
+                                    sleep(2)
+                                    #drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                                    sleep(4)
+                                    #drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
+                                    sleep(4)
+                                    #drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
+                                    sleep(2)
+                                    phase_1_1 = 1
+                                    phase_1_2 = 0
+                                    step = 0
+                                    already = 0
+                                    red_find = 0
+
+                        elif cnt >= 3:
+
+                            bi_pup = puple_hsv(image)
+
+                            value_th_pup = np.where(bi_pup[:, :] == 255)
+
+                            min_x1_pup = np.min(value_th_pup[1])
+                            max_x1_pup = np.max(value_th_pup[1])
+
+                            if max_x1_pup - min_x1_pup < 25:
+                                sleep(2)
+                                #drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
+                                print("puple is far")
+                            else:
+                                print("Landing")
+                                # 녹화 종료
+                                drone.sendLanding()
+                                sleep(5)
+                                drone.close()
+                                wc = False
 
 
 
