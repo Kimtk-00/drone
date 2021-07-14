@@ -112,7 +112,24 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         if find_ring == 0:
                             #drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
                             print("find ring , go to down")
+                            find_ring = 1
                             sleep(2)
+                        elif find_ring == 1 :
+                            # drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            print("find ring , go to left")
+                            find_ring = 2
+                            sleep(2)
+                        elif find_ring == 2 :
+                            # drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            print("find ring , go to right")
+                            find_ring=3
+                            sleep(2)
+                        elif find_ring == 3:
+                            # drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            print("find ring , go to up")
+                            find_ring= 4
+                            sleep(2)
+
                     else:
                         min_x1 = np.min(value_th[1])
                         max_x1 = np.max(value_th[1])
@@ -187,7 +204,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to left")
-                                print(center_x2, center_y2)
+
                                 print(f"find_num : {find_num}")
 
                             elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
@@ -195,7 +212,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to right")
-                                print(center_x2, center_y2)
+
                                 print(f"find_num : {find_num}")
 
                             elif center_x2 >= 305 and center_x2 <= 335:
@@ -206,7 +223,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to up")
-                                print(center_x2, center_y2)
+
                                 print(f"find_num : {find_num}")
 
                             elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
@@ -214,7 +231,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 sleep(3)
                                 find_num = find_num + 1
                                 print("go to down")
-                                print(center_x2, center_y2)
                                 print(f"find_num : {find_num}")
 
                             elif center_y2 >= 225 and center_y2 <= 255:
