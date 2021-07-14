@@ -82,7 +82,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     f = now.strftime('%d %H:%M:%S')
     picam.start_recording(output=f + '.h264')  # 녹화 시작
     # 이륙
-    #f_takeOff(drone)
+    f_takeOff(drone)
 
     try:
         while (wc):
@@ -360,7 +360,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         find_num = 0
                         print(" back to phase 1 ")
                         drone.sendControlPosition16(-2, 0, 0, 5, 0, 0)
-                        sleep(1)
+                        sleep(3)
                     #파란색 링이 안보일때 이제 레드를 찾는다
                     else:
                         sleep(4)
