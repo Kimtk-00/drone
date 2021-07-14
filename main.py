@@ -114,7 +114,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             find_ring = 2
                             sleep(2)
                         elif find_ring == 2 :
-                            drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
+                            drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                             sleep(2)
                             drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
                             print("find ring , go to right")
