@@ -343,7 +343,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     else:
                         min_x1_red = 0
 
-                    if np.sum(bi_blue) / 255 > 1000000:
+                    if np.sum(bi_blue) / 255 > 150000:
                         print(np.sum(bi_blue) / 255)
                         phase_1_1 = 1
                         phase_1_2 = 0
