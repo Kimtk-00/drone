@@ -108,7 +108,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_blue = blue_hsv(image)
                     value_th = np.where(bi_blue[:, :] == 255)
                     #파란색 링을 찾는데 링이 일정이상 안보이면 상하좌우로 움직이면서 링을 찾는거지
-                    if np.sum(bi_blue) / 255 < 100000:
+                    if np.sum(bi_blue) / 255 < 70000:
                         if find_ring == 0:
                             drone.sendControlPosition16(0, 0,-3, 5, 0, 0)
                             print("find ring , go to down")
