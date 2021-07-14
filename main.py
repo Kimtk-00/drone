@@ -398,6 +398,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                     step = 0
                                     already = 0
                                     red_find = 0
+                                    find_ring = 0
                         #3번째 링을 통과했으면 보라색을 찾는다.
                         elif cnt >= 3:
 
