@@ -112,13 +112,8 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         if find_ring == 0:
                             #drone.sendControlPosition16(0, 0,-2, 5, 0, 0)
                             print("find ring , go to down")
-
-
                             sleep(2)
                     else:
-
-
-
                         min_x1 = np.min(value_th[1])
                         max_x1 = np.max(value_th[1])
                         min_y1 = np.min(value_th[0])
@@ -354,6 +349,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
 
                         if min_x1_red < 300:
+                            print("red on the left")
                             #drone.sendControlPosition16(-1, 0, 0, 5, 0, 0)
                             sleep(2)
 
