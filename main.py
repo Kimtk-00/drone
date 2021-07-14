@@ -330,12 +330,12 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 check = [0, 0]
                         #이미 직진을 한번 했다면 조금만 직진 (전처럼 1.8미터나 2.5미터 직진하면 박을테니까)
                         elif step >= 1 :
-                            # 이미 한번 직진했다면 0.9m만 직진
+                            # 이미 한번 직진했다면 1.1m만 직진
                             if check == [1, 1] :
                                 sleep(3)
-                                print("go to forward 10 ")
+                                print("go to forward 11 ")
                                 print(center_x2, center_y2)
-                                drone.sendControlPosition16(10, 0, 0, 5, 0, 0)
+                                drone.sendControlPosition16(11, 0, 0, 5, 0, 0)
                                 sleep(3)
                                 phase_1_1 = 0
                                 phase_1_2 = 1
@@ -359,6 +359,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         step = step + 1
                         find_num = 0
                         print(" back to phase 1 ")
+                        drone.sendControlPosition16(-2, 0, 0, 5, 0, 0)
                         sleep(1)
                     #파란색 링이 안보일때 이제 레드를 찾는다
                     else:
