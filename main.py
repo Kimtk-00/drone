@@ -74,6 +74,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
     already = 0
     red_find = 0
     find_ring = 0
+    just = 0
 
     # 이륙
     f_takeOff(drone)
@@ -355,44 +356,30 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     else:
                         min_x1_red = 0
 
-                    #빨간색표식이 왼쪽에 보이면 왼쪽으로 이동
-                    if min_x1_red < 300:
-                        print("red on the left")
-                        drone.sendControlPosition16(-1, 0, 0, 5, 0, 0)
-                        sleep(2)
+
                     #빨간색이 일정이상 안보일때 직진
-                    if np.sum(bi_red) < 20000 and cnt < 3:
+                    #이렇게 해놓으면 직진했는데 아직 통과 못했더라도 빨간색 찾을때까지 직진하지않을까
+                    if np.sum(bi_red) < 400 and cnt < 3 :
                         drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                         print("go to red")
                         sleep(2)
-                    #일정읻상 보이고 마지막 링이 아닐때
-                    elif np.sum(bi_red) >= 20000 and cnt < 3:
-                        if cnt != 3:
-                            value_th_red = np.where(bi_red[:, :] == 255)
-                            min_x1_red = np.min(value_th_red[1])
-                            max_x1_red = np.max(value_th_red[1])
-                            #빨간색 표식의 크기가 작으면 다시직진
-                            if max_x1_red - min_x1_red < 25:
-                                sleep(2)
-                                print("red is far")
-                                drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                                red_find = 1
-                            #크기가 크면 좌회전 실시
-                            else:
-                                print("turn left")
-                                sleep(2)
-                                drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                                sleep(4)
-                                drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
-                                sleep(4)
-                                drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                                sleep(2)
-                                phase_1_1 = 1
-                                phase_1_2 = 0
-                                step = 0
-                                already = 0
-                                red_find = 0
-                                find_ring = 0
+
+                    #일정이상 보이고 마지막 링이 아닐때
+                    elif np.sum(bi_red) >= 400 and cnt < 3:
+                        print("turn left")
+                        sleep(2)
+                        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                        sleep(4)
+                        drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
+                        sleep(4)
+                        drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                        sleep(2)
+                        phase_1_1 = 1
+                        phase_1_2 = 0
+                        step = 0
+                        already = 0
+                        red_find = 0
+                        find_ring = 0
                     #3번째 링을 통과했으면 보라색을 찾는다.
                     elif cnt >= 3:
 
