@@ -354,7 +354,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     #빨간색이 일정이상 안보일때 직진
                     #이렇게 해놓으면 직진했는데 아직 통과 못했더라도 빨간색 찾을때까지 직진하지않을까
-                    if np.sum(bi_red)/255 < 500 and cnt < 3 :
+                    if np.sum(bi_red)/255 < 500 and  np.sum(bi_blue)/255 > 10000 and cnt < 3 :
                         drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                         print("go to red")
                         sleep(2)
@@ -384,8 +384,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         sleep(4)
                         drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
                         sleep(4)
-                        drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                        sleep(2)
                         phase_1_1 = 1
                         phase_1_2 = 0
                         step = 0
@@ -398,21 +396,25 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         bi_pup = puple_hsv(image)
                         value_th_pup = np.where(bi_pup[:, :] == 255)
 
-                        min_x1_pup = np.min(value_th_pup[1])
-                        max_x1_pup = np.max(value_th_pup[1])
-
-                        if max_x1_pup - min_x1_pup < 25:
-                            sleep(2)
+                        if np.sum(bi_pup) / 255 < 500 and np.sum(bi_blue) / 255 > 10000 and cnt < 3:
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                            print("puple is far")
-                        elif np.sum(bi_blue) / 255 < 1000:
-                            drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                            print("go to pup")
                             sleep(2)
+
+                        # 일정이상 보이고 마지막 링이 아닐때
+                        elif np.sum(bi_pup) / 255 >= 500 and cnt < 3:
+                            print("Landing")
                             drone.sendLanding()
                             sleep(5)
                             drone.close()
                             wc = False
-                            sleep(2)
+
+                        elif np.sum(bi_blue) / 255 < 1000:
+                            print("Landing")
+                            drone.sendLanding()
+                            sleep(5)
+                            drone.close()
+                            wc = False
 
                         else:
                             print("Landing")
