@@ -376,6 +376,7 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                         red_find = 0
                         find_ring = 0
 
+
                     elif np.sum(bi_blue)/255 < 1000:
                         drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
                         sleep(2)
