@@ -343,11 +343,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                     bi_red = red_hsv(image)
                     bi_pup = puple_hsv(image)
                     bi_blue = blue_hsv(image)
-                    #파란색 링이 아직도 일정이상 보인다? -> 페이즈1로 돌아가서 다시 링 중점찾고
-                    #여기서 step이 증가되니까 다시 직진할때 거리는 위에서 말했듯이 조금만 직진하겠지?
-
-                    #파란색 링이 안보일때 이제 레드를 찾는다
-
                     sleep(4)
                     value_th_red = np.where(bi_red[:, :] == 255)
 
@@ -359,14 +354,30 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
 
                     #빨간색이 일정이상 안보일때 직진
                     #이렇게 해놓으면 직진했는데 아직 통과 못했더라도 빨간색 찾을때까지 직진하지않을까
-                    if np.sum(bi_red) < 400 and cnt < 3 :
+                    if np.sum(bi_red)/255 < 500 and cnt < 3 :
                         drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                         print("go to red")
                         sleep(2)
 
                     #일정이상 보이고 마지막 링이 아닐때
-                    elif np.sum(bi_red) >= 400 and cnt < 3:
+                    elif np.sum(bi_red)/255 >= 500 and cnt < 3:
                         print("turn left")
+                        sleep(2)
+                        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
+                        sleep(4)
+                        drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
+                        sleep(4)
+                        drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
+                        sleep(2)
+                        phase_1_1 = 1
+                        phase_1_2 = 0
+                        step = 0
+                        already = 0
+                        red_find = 0
+                        find_ring = 0
+
+                    elif np.sum(bi_blue)/255 < 1000:
+                        drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
                         sleep(2)
                         drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
                         sleep(4)
@@ -393,6 +404,15 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                             sleep(2)
                             drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
                             print("puple is far")
+                        elif np.sum(bi_blue) / 255 < 1000:
+                            drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
+                            sleep(2)
+                            drone.sendLanding()
+                            sleep(5)
+                            drone.close()
+                            wc = False
+                            sleep(2)
+
                         else:
                             print("Landing")
                             # 녹화 종료
