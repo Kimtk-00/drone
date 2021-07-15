@@ -28,11 +28,10 @@ def f_takeOff(drone):
 # 빨간색 hsv로 변환
 def red_hsv(image):
     image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    H = image_hsv[:, :, 0]
-    _, bi_H = threshold(H, 172, 255, THRESH_BINARY)
-    _, bi_H_ = threshold(H, 182, 255, THRESH_BINARY_INV)
+    th_low = (40, 150, 160)
+    th_high = (50, 255, 255)
 
-    img_th = bitwise_and(bi_H, bi_H_)
+    img_th = inRange(image_hsv, th_low, th_high)
     return img_th
 
 def blue_hsv(image):
@@ -308,7 +307,6 @@ if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ 
                                 cnt = cnt + 1
                                 find_num = 0
                                 check = [0, 0]
-
 
                             # 2,3번째 링에선 2.5m직진
                             elif check == [1, 1]  and cnt != 0:
