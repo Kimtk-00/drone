@@ -1,434 +1,216 @@
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-from e_drone.drone import *
-from e_drone.protocol import *
-from e_drone.system import *
-from time import sleep
-from cv2 import cvtColor, COLOR_BGR2HSV, threshold, THRESH_BINARY, THRESH_BINARY_INV, bitwise_and, flip, waitKey, \
-    imshow, destroyAllWindows, imread, inRange, imwrite
+from djitellopy import Tello
+import cv2
 import numpy as np
 
+######################################################################
+width = 1280  # WIDTH OF THE IMAGE
+height = 720  # HEIGHT OF THE IMAGE
+deadZone = 100
+######################################################################
 
-# 카메라 세팅
-def cam_setting(picam):
-    # picam 메뉴얼 URL : https://picamera.readthedocs.io/en/release-1.10/api_camera.html
-    # 받아오는 카메라 해상도 설정
-    picam.resolution = (640, 480)
-    # 카메라의 프레임 설정
-    picam.framerate = 32
+startCounter = 0
 
+# CONNECT TO TELLO
+me = Tello()
+me.connect()
+me.for_back_velocity = 0
+me.left_right_velocity = 0
+me.up_down_velocity = 0
+me.yaw_velocity = 0
+me.speed = 0
 
-# 드론 이륙
-def f_takeOff(drone):
-    drone.sendTakeOff()
-    print("TakeOff")
-    sleep(5)
+print(me.get_battery())
 
+me.streamoff()
+me.streamon()
+########################
 
-# 빨간색 hsv로 변환
-def red_hsv(image):
-    image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    th_low = (40, 150, 160)
-    th_high = (50, 255, 255)
-
-    img_th = inRange(image_hsv, th_low, th_high)
-    return img_th
-
-def blue_hsv(image):
-    image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    th_low = (90, 80, 70)
-    th_high = (120, 255, 255)
-    img_th = inRange(image_hsv, th_low, th_high)
-    return img_th
+frameWidth = width
+frameHeight = height
+# cap = cv2.VideoCapture(1)
+# cap.set(3, frameWidth)
+# cap.set(4, frameHeight)
+# cap.set(10,200)
 
 
-def puple_hsv(image):
-    image_hsv = cvtColor(image, COLOR_BGR2HSV)
-    th_low = (50, 10, 50)
-    th_high = (200, 200, 255)
-
-    img_th = inRange(image_hsv, th_low, th_high)
-    return img_th
+global imgContour
+global dir;
 
 
-if __name__ == "__main__":  # 이 파일을 직접 실행했을 경우 __name__ = "__main__"이 됨
-    # 파이캠 설정
-    picam = PiCamera()
-    cam_setting(picam)
-    rawCapture = PiRGBArray(picam, size=(640, 480))
-    # drone 인스턴스 선언
-    drone = Drone()
-    # drone 인스턴스 시작
-    drone.open()
-    # 변수 설정
-    # ---------------------------------
-    phase_1_1 = 1
-    phase_1_2 = 0
-    step = 0
-    check = [0, 0]
-    back = 0
-    wc = True
-    cnt = 0
-    find_num = 0
-    already = 0
-    red_find = 0
-    find_ring = 0
-    just = 0
-
-    # 이륙
-    f_takeOff(drone)
-
-    try:
-        while (wc):
-
-            for frame in picam.capture_continuous(rawCapture, format='bgr', \
-                                                  use_video_port=True):
-
-                # image 변수에 frame의 배열 저장 - Numpy 형식
-                image = frame.array
-                sleep(0.01)
-
-                # 영상 x, y축 반전
-                image = flip(image, 0)
-                image = flip(image, 1)
-
-                rawCapture.truncate(0)
-
-                bi_red = red_hsv(image)
-                bi_pup = puple_hsv(image)
-
-                # 첫번째 링일 때
-                if phase_1_1 == 1:
-                    bi_blue = blue_hsv(image)
-                    value_th = np.where(bi_blue[:, :] == 255)
-                    #파란색 링을 찾는데 링이 일정이상 안보이면 상하좌우로 움직이면서 링을 찾는거지
-                    if np.sum(bi_blue) / 255 < 30000:
-                        if find_ring == 0:
-                            drone.sendControlPosition16(0, 0,-3, 5, 0, 0)
-                            print("find ring , go to down")
-                            find_ring = 1
-                            sleep(2)
-                        elif find_ring == 1 :
-                            drone.sendControlPosition16(0, 3, 0, 5, 0, 0)
-                            print("find ring , go to left")
-                            find_ring = 2
-                            sleep(2)
-                        elif find_ring == 2 :
-                            drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
-                            sleep(2)
-                            drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
-                            print("find ring , go to right")
-                            find_ring = 3
-                            sleep(2)
-                        elif find_ring == 3:
-                            drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                            print("find ring , go to up")
-                            find_ring= 0
-                            sleep(2)
-                    #링이 일정이상 보인다? -> 그때부터 연산 시작
-                    else:
-                        min_x1 = np.min(value_th[1])
-                        max_x1 = np.max(value_th[1])
-                        min_y1 = np.min(value_th[0])
-                        max_y1 = np.max(value_th[0])
-
-                        center_x1 = int((min_x1 + max_x1) / 2)
-                        center_y1 = int((min_y1 + max_y1) / 2)
-
-                        center_min_x = 640
-                        center_max_x = 0
-                        center_min_y = 480
-                        center_max_y = 0
-
-                        for i in range(center_x1, max_x1 - 5):
-                            if bi_blue[center_y1][i] == 255 and i > center_max_x:
-                                center_max_x = i
-                                break
-                        if center_max_x == 0:
-                            center_max_x = 639
-
-                        for i in range(center_x1, min_x1, -1):
-                            if bi_blue[center_y1][i] == 255 and i < center_min_x:
-                                center_min_x = i
-                                break
-                        if center_min_x == 640:
-                            center_min_x = 1
-
-                        for j in range(center_y1, min_y1, -1):
-                            if bi_blue[j][center_x1] == 255 and j < center_min_y:
-                                center_min_y = j
-                                break
-                        if center_min_y == 480:
-                            center_min_y = 1
-
-                        for j in range(center_y1, max_y1):
-                            if bi_blue[j][center_x1] == 255 and j > center_max_y:
-                                center_max_y = j
-                                break
-                        if center_max_y == 0:
-                            center_max_y = 479
-
-                        center_x2 = int((center_min_x + center_max_x) / 2)
-                        center_y2 = int((center_min_y + center_max_y) / 2)
-
-                        rad_up = center_y2 - center_min_y
-                        rad_down = center_max_y - center_y2
-                        rad_left = center_x2 - center_min_x
-                        rad_right = center_max_x - center_x2
-
-                        if rad_up > rad_down + 30:
-                            drone.sendControlPosition16(0, 0, 2, 5, 0, 0)
-                            print("circle is on the top")
-                            sleep(1)
-                        elif rad_down > rad_up + 30:
-                            drone.sendControlPosition16(0, 0, -2, 5, 0, 0)
-                            print("circle is under the drone")
-                            sleep(1)
-
-                        if rad_left > rad_right + 30:
-                            drone.sendControlPosition16(0, 2, 0, 5, 0, 0)
-                            print("circle is on the left")
-                            sleep(1)
-                        elif rad_right > rad_left + 30:
-                            drone.sendControlPosition16(0, -2, 0, 5, 0, 0)
-                            sleep(1)
-                            print("circle is on the right")
-                        #첫번째 링일 경우
-                        if cnt == 0:
-                            if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                                drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to left")
-                                print(f"find_num : {find_num}")
-
-                            elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                                drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to right")
-                                print(f"find_num : {find_num}")
-
-                            elif center_x2 >= 305 and center_x2 <= 335:
-                                check[0] = 1
-
-                            if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                                drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to up")
-                                print(f"find_num : {find_num}")
-
-                            elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                                drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to down")
-                                print(f"find_num : {find_num}")
-
-                            elif center_y2 >= 225 and center_y2 <= 255:
-                                check = [1, 1]
-                        # end of first fly detection
-                        #빨간색을 아직 못봤고 2,3번째 링을 찾을경우
-                        elif red_find == 0 and cnt != 0:
-                            if center_x2 < 305:  # 중점이 왼쪽에 있다. -> 왼쪽으로 가야한다.
-                                drone.sendControlPosition16(0, 1, 0, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to left")
-                                print(center_x2, center_y2)
-                                print(f"find_num : {find_num}")
-
-                            elif center_x2 > 335:  # 중점이 오른쪽에 있다. -> 오른쪽으로 가야한다.
-                                drone.sendControlPosition16(0, -1, 0, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to right")
-                                print(center_x2, center_y2)
-                                print(f"find_num : {find_num}")
-
-                            elif center_x2 >= 305 and center_x2 <= 335:
-                                check[0] = 1
-
-                            if center_y2 < 225:  # 중점이 아래에있다 - > 위로 가야한다.
-                                drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to up")
-                                print(center_x2, center_y2)
-                                print(f"find_num : {find_num}")
-
-                            elif center_y2 > 255:  # 중점이 위에 있다. -> 아래로 가야한다.
-                                drone.sendControlPosition16(0, 0, -1, 5, 0, 0)
-                                sleep(3)
-                                find_num = find_num + 1
-                                print("go to down")
-                                print(center_x2, center_y2)
-                                print(f"find_num : {find_num}")
-
-                            elif center_y2 >= 225 and center_y2 <= 255:
-                                check[1] = 1
-
-                        #아직 직진을 한번도 안한 상태
-                        if step == 0:
-                            # 첫번째 링에서 4번정도 찾으면 그냥 가라
-                            if cnt == 0  and find_num >= 4:
-                                print("go to forward 18 find >=4")
-                                drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
-                                sleep(5)
-                                phase_1_1 = 0
-                                phase_1_2 = 1
-                                cnt = cnt + 1
-                                step = 0
-                                find_num = 0
-                                check = [0, 0]
-                                already = 1
-                            # 2,3번째 링도 8번 찾으면 가라
-                            elif cnt != 0 and find_num >= 8:
-                                print("go to forward 25 find>=8")
-                                print(center_x2, center_y2)
-                                drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
-                                sleep(5)
-                                phase_1_1 = 0
-                                phase_1_2 = 1
-                                cnt = cnt + 1
-                                find_num = 0
-                                check = [0, 0]
+def empty(a):
+    pass
 
 
-                            # find가 4,8을 넘기전에 찾으면 직진  첫번째 링에선 1.8m직진
-                            if check == [1, 1]  and cnt == 0:
-                                print("go to forward 18")
-                                print(center_x2, center_y2)
-                                drone.sendControlPosition16(18, 0, 0, 6, 0, 0)
-                                sleep(5)
-                                phase_1_1 = 0
-                                phase_1_2 = 1
-                                cnt = cnt + 1
-                                find_num = 0
-                                check = [0, 0]
+cv2.namedWindow("HSV")
+cv2.resizeWindow("HSV", 640, 240)
+cv2.createTrackbar("HUE Min", "HSV", 20, 179, empty)
+cv2.createTrackbar("HUE Max", "HSV", 40, 179, empty)
+cv2.createTrackbar("SAT Min", "HSV", 148, 255, empty)
+cv2.createTrackbar("SAT Max", "HSV", 255, 255, empty)
+cv2.createTrackbar("VALUE Min", "HSV", 89, 255, empty)
+cv2.createTrackbar("VALUE Max", "HSV", 255, 255, empty)
 
-                            # 2,3번째 링에선 2.5m직진
-                            elif check == [1, 1]  and cnt != 0:
-                                print("go to forward 25")
-                                print(center_x2, center_y2)
-                                drone.sendControlPosition16(25, 0, 0, 6, 0, 0)
-                                sleep(5)
-                                phase_1_1 = 0
-                                phase_1_2 = 1
-                                cnt = cnt + 1
-                                find_num = 0
-                                check = [0, 0]
-                        #이미 직진을 한번 했다면 조금만 직진 (전처럼 1.8미터나 2.5미터 직진하면 박을테니까)
-                        elif step >= 1 :
-                            # 이미 한번 직진했다면 1.1m만 직진
-                            if check == [1, 1]:
-                                sleep(3)
-                                print("go to forward 11 ")
-                                print(center_x2, center_y2)
-                                drone.sendControlPosition16(11, 0, 0, 5, 0, 0)
-                                sleep(3)
-                                phase_1_1 = 0
-                                phase_1_2 = 1
-                                cnt = cnt + 1
-                                find_num = 0
-                                step = 0
-                                check = [0, 0]
-
-                # end of phase 1_1
-                #파란색 링 통과 후
-                if phase_1_2 == 1:
-                    bi_red = red_hsv(image)
-                    bi_pup = puple_hsv(image)
-                    bi_blue = blue_hsv(image)
-                    sleep(4)
-                    value_th_red = np.where(bi_red[:, :] == 255)
-
-                    if np.sum(value_th_red) != 0:
-                        min_x1_red = np.min(value_th_red[1])
-                    else:
-                        min_x1_red = 0
+cv2.namedWindow("Parameters")
+cv2.resizeWindow("Parameters", 640, 240)
+cv2.createTrackbar("Threshold1", "Parameters", 166, 255, empty)
+cv2.createTrackbar("Threshold2", "Parameters", 171, 255, empty)
+cv2.createTrackbar("Area", "Parameters", 1750, 30000, empty)
 
 
-                    #빨간색이 일정이상 안보일때 직진
-                    #이렇게 해놓으면 직진했는데 아직 통과 못했더라도 빨간색 찾을때까지 직진하지않을까
-                    if np.sum(bi_red)/255 < 500 and  np.sum(bi_blue)/255 > 10000 and cnt < 3 :
-                        drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                        print("go to red")
-                        sleep(2)
-
-                    #일정이상 보이고 마지막 링이 아닐때
-                    elif np.sum(bi_red)/255 >= 500 and cnt < 3:
-                        print("turn left")
-                        sleep(2)
-                        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                        sleep(4)
-                        drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
-                        sleep(4)
-                        drone.sendControlPosition16(0, 0, 1, 5, 0, 0)
-                        sleep(2)
-                        phase_1_1 = 1
-                        phase_1_2 = 0
-                        step = 0
-                        already = 0
-                        red_find = 0
-                        find_ring = 0
-
-
-                    elif np.sum(bi_blue)/255 < 1000:
-                        drone.sendControlPosition16(2, 0, 0, 5, 0, 0)
-                        sleep(2)
-                        drone.sendControlPosition16(0, 0, 0, 0, 90, 20)
-                        sleep(4)
-                        drone.sendControlPosition16(10, 0, 0, 6, 0, 0)
-                        sleep(4)
-                        phase_1_1 = 1
-                        phase_1_2 = 0
-                        step = 0
-                        already = 0
-                        red_find = 0
-                        find_ring = 0
-                    #3번째 링을 통과했으면 보라색을 찾는다.
-                    elif cnt >= 3:
-
-                        bi_pup = puple_hsv(image)
-                        value_th_pup = np.where(bi_pup[:, :] == 255)
-
-                        if np.sum(bi_pup) / 255 < 500 and np.sum(bi_blue) / 255 > 10000 and cnt < 3:
-                            drone.sendControlPosition16(1, 0, 0, 5, 0, 0)
-                            print("go to pup")
-                            sleep(2)
-
-                        # 일정이상 보이고 마지막 링이 아닐때
-                        elif np.sum(bi_pup) / 255 >= 500 and cnt < 3:
-                            print("Landing")
-                            drone.sendLanding()
-                            sleep(5)
-                            drone.close()
-                            wc = False
-
-                        elif np.sum(bi_blue) / 255 < 1000:
-                            print("Landing")
-                            drone.sendLanding()
-                            sleep(5)
-                            drone.close()
-                            wc = False
-
-                        else:
-                            print("Landing")
-                            # 녹화 종료
-                            drone.sendLanding()
-                            sleep(5)
-                            drone.close()
-                            wc = False
+def stackImages(scale, imgArray):
+    rows = len(imgArray)
+    cols = len(imgArray[0])
+    rowsAvailable = isinstance(imgArray[0], list)
+    width = imgArray[0][0].shape[1]
+    height = imgArray[0][0].shape[0]
+    if rowsAvailable:
+        for x in range(0, rows):
+            for y in range(0, cols):
+                if imgArray[x][y].shape[:2] == imgArray[0][0].shape[:2]:
+                    imgArray[x][y] = cv2.resize(imgArray[x][y], (0, 0), None, scale, scale)
+                else:
+                    imgArray[x][y] = cv2.resize(imgArray[x][y], (imgArray[0][0].shape[1], imgArray[0][0].shape[0]),
+                                                None, scale, scale)
+                if len(imgArray[x][y].shape) == 2: imgArray[x][y] = cv2.cvtColor(imgArray[x][y], cv2.COLOR_GRAY2BGR)
+        imageBlank = np.zeros((height, width, 3), np.uint8)
+        hor = [imageBlank] * rows
+        hor_con = [imageBlank] * rows
+        for x in range(0, rows):
+            hor[x] = np.hstack(imgArray[x])
+        ver = np.vstack(hor)
+    else:
+        for x in range(0, rows):
+            if imgArray[x].shape[:2] == imgArray[0].shape[:2]:
+                imgArray[x] = cv2.resize(imgArray[x], (0, 0), None, scale, scale)
+            else:
+                imgArray[x] = cv2.resize(imgArray[x], (imgArray[0].shape[1], imgArray[0].shape[0]), None, scale, scale)
+            if len(imgArray[x].shape) == 2: imgArray[x] = cv2.cvtColor(imgArray[x], cv2.COLOR_GRAY2BGR)
+        hor = np.hstack(imgArray)
+        ver = hor
+    return ver
 
 
+def getContours(img, imgContour):
+    global dir
+    contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        areaMin = cv2.getTrackbarPos("Area", "Parameters")
+        if area > areaMin:
+            cv2.drawContours(imgContour, cnt, -1, (255, 0, 255), 7)
+            peri = cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+            # print(len(approx))
+            x, y, w, h = cv2.boundingRect(approx)
+            cx = int(x + (w / 2))  # CENTER X OF THE OBJECT
+            cy = int(y + (h / 2))  # CENTER X OF THE OBJECT
 
-    except Exception as e:
-        print(e)
-        drone.sendStop()
-        sleep(2)
-        picam.stop_recording()
-        drone.close()
+            if (cx < int(frameWidth / 2) - deadZone):
+                cv2.putText(imgContour, " GO LEFT ", (20, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                cv2.rectangle(imgContour, (0, int(frameHeight / 2 - deadZone)),
+                              (int(frameWidth / 2) - deadZone, int(frameHeight / 2) + deadZone), (0, 0, 255),
+                              cv2.FILLED)
+                dir = 1
+            elif (cx > int(frameWidth / 2) + deadZone):
+                cv2.putText(imgContour, " GO RIGHT ", (20, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                cv2.rectangle(imgContour, (int(frameWidth / 2 + deadZone), int(frameHeight / 2 - deadZone)),
+                              (frameWidth, int(frameHeight / 2) + deadZone), (0, 0, 255), cv2.FILLED)
+                dir = 2
+            elif (cy < int(frameHeight / 2) - deadZone):
+                cv2.putText(imgContour, " GO UP ", (20, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                cv2.rectangle(imgContour, (int(frameWidth / 2 - deadZone), 0),
+                              (int(frameWidth / 2 + deadZone), int(frameHeight / 2) - deadZone), (0, 0, 255),
+                              cv2.FILLED)
+                dir = 3
+            elif (cy > int(frameHeight / 2) + deadZone):
+                cv2.putText(imgContour, " GO DOWN ", (20, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                cv2.rectangle(imgContour, (int(frameWidth / 2 - deadZone), int(frameHeight / 2) + deadZone),
+                              (int(frameWidth / 2 + deadZone), frameHeight), (0, 0, 255), cv2.FILLED)
+                dir = 4
+            else:
+                dir = 0
+
+            cv2.line(imgContour, (int(frameWidth / 2), int(frameHeight / 2)), (cx, cy), (0, 0, 255), 3)
+            cv2.rectangle(imgContour, (x, y), (x + w, y + h), (0, 255, 0), 5)
+            cv2.putText(imgContour, "Points: " + str(len(approx)), (x + w + 20, y + 20), cv2.FONT_HERSHEY_COMPLEX, .7,
+                        (0, 255, 0), 2)
+            cv2.putText(imgContour, "Area: " + str(int(area)), (x + w + 20, y + 45), cv2.FONT_HERSHEY_COMPLEX, 0.7,
+                        (0, 255, 0), 2)
+            cv2.putText(imgContour, " " + str(int(x)) + " " + str(int(y)), (x - 20, y - 45), cv2.FONT_HERSHEY_COMPLEX,
+                        0.7, (0, 255, 0), 2)
+        else:
+            dir = 0
 
 
+def display(img):
+    cv2.line(img, (int(frameWidth / 2) - deadZone, 0), (int(frameWidth / 2) - deadZone, frameHeight), (255, 255, 0), 3)
+    cv2.line(img, (int(frameWidth / 2) + deadZone, 0), (int(frameWidth / 2) + deadZone, frameHeight), (255, 255, 0), 3)
+    cv2.circle(img, (int(frameWidth / 2), int(frameHeight / 2)), 5, (0, 0, 255), 5)
+    cv2.line(img, (0, int(frameHeight / 2) - deadZone), (frameWidth, int(frameHeight / 2) - deadZone), (255, 255, 0), 3)
+    cv2.line(img, (0, int(frameHeight / 2) + deadZone), (frameWidth, int(frameHeight / 2) + deadZone), (255, 255, 0), 3)
+
+
+while True:
+
+    # GET THE IMAGE FROM TELLO
+    frame_read = me.get_frame_read()
+    myFrame = frame_read.frame
+    img = cv2.resize(myFrame, (width, height))
+    imgContour = img.copy()
+    imgHsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    h_min = cv2.getTrackbarPos("HUE Min", "HSV")
+    h_max = cv2.getTrackbarPos("HUE Max", "HSV")
+    s_min = cv2.getTrackbarPos("SAT Min", "HSV")
+    s_max = cv2.getTrackbarPos("SAT Max", "HSV")
+    v_min = cv2.getTrackbarPos("VALUE Min", "HSV")
+    v_max = cv2.getTrackbarPos("VALUE Max", "HSV")
+
+    lower = np.array([h_min, s_min, v_min])
+    upper = np.array([h_max, s_max, v_max])
+    mask = cv2.inRange(imgHsv, lower, upper)
+    result = cv2.bitwise_and(img, img, mask=mask)
+    mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+
+    imgBlur = cv2.GaussianBlur(result, (7, 7), 1)
+    imgGray = cv2.cvtColor(imgBlur, cv2.COLOR_BGR2GRAY)
+    threshold1 = cv2.getTrackbarPos("Threshold1", "Parameters")
+    threshold2 = cv2.getTrackbarPos("Threshold2", "Parameters")
+    imgCanny = cv2.Canny(imgGray, threshold1, threshold2)
+    kernel = np.ones((5, 5))
+    imgDil = cv2.dilate(imgCanny, kernel, iterations=1)
+    getContours(imgDil, imgContour)
+    display(imgContour)
+
+    ################# FLIGHT
+    if startCounter == 0:
+        me.takeoff()
+        startCounter = 1
+
+    if dir == 1:
+        me.left_right_velocity = -10
+    elif dir == 2:
+        me.left_right_velocity = 10
+    elif dir == 3:
+        me.up_down_velocity = 10
+    elif dir == 4:
+        me.up_down_velocity = -10
+    else:
+        me.left_right_velocity = 0;
+        me.for_back_velocity = 0;
+        me.up_down_velocity = 0;
+        me.yaw_velocity = 0
+    # SEND VELOCITY VALUES TO TELLO
+    if me.send_rc_control:
+        me.send_rc_control(me.left_right_velocity, me.for_back_velocity, me.up_down_velocity, me.yaw_velocity)
+    print(dir)
+
+    stack = stackImages(0.4, ([img, result], [imgDil, imgContour]))
+    cv2.imshow('Horizontal Stacking', stack)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        me.land()
+        break
+
+# cap.release()
+cv2.destroyAllWindows()
