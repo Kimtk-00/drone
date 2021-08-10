@@ -9,7 +9,7 @@ from threading import Thread
 from typing import Optional, Union, Type, Dict
 
 import cv2 # type: ignore
-from .enforce_types import enforce_types
+from enforce_types import enforce_types
 
 
 threads_initialized = False
