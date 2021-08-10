@@ -14,6 +14,7 @@ startCounter = 0
 
 # CONNECT TO TELLO
 me = Tello()
+me.connect()
 me.for_back_velocity = 0
 me.left_right_velocity = 0
 me.up_down_velocity = 0
@@ -25,7 +26,7 @@ print(me.get_battery())
 me.streamoff()
 me.streamon()
 ########################
-TELLO_IP = '192.168.0.63'  # Tello IP address
+
 
 frameWidth = width
 frameHeight = height
