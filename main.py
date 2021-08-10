@@ -24,6 +24,7 @@ print(me.get_battery())
 me.streamoff()
 me.streamon()
 ########################
+TELLO_IP = '192.168.0.63'  # Tello IP address
 
 frameWidth = width
 frameHeight = height
