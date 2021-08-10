@@ -2,6 +2,7 @@ from djitellopy import Tello
 import cv2
 import numpy as np
 
+
 ######################################################################
 width = 1280  # WIDTH OF THE IMAGE
 height = 720  # HEIGHT OF THE IMAGE
@@ -13,7 +14,7 @@ startCounter = 0
 
 # CONNECT TO TELLO
 me = Tello()
-me.connect()
+me.connect_to_wifi("NPE","NPENPENPE1")
 me.for_back_velocity = 0
 me.left_right_velocity = 0
 me.up_down_velocity = 0
