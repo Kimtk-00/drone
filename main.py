@@ -14,7 +14,6 @@ startCounter = 0
 
 # CONNECT TO TELLO
 me = Tello()
-me.connect_to_wifi("NPE","NPENPENPE1")
 me.for_back_velocity = 0
 me.left_right_velocity = 0
 me.up_down_velocity = 0
