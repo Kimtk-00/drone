@@ -10,6 +10,7 @@ deadZone = 100
 
 startCounter = 0
 
+
 # CONNECT TO TELLO
 me = Tello()
 me.connect()
